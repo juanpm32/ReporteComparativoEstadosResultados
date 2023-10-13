@@ -19,8 +19,8 @@ define(['N'],
         }
 
         const LABELS = [
-            ['custpage_report_title', 'BM - Comparative Report', 'BM - Reporte Comparativo'],
-            ['custpage_reporte_title_deails', 'BM - Report Comparative Details', 'BM - Detalle Del Reporte Comparativo'],
+            ['custpage_report_title', 'Report Comparative P&L', 'Reporte Comparativo P&L'],
+            ['custpage_reporte_title_deails', 'Report Comparative P&L Details', 'Detalle Del Reporte Comparativo P&L'],
             ['custpage_report_criteria_report', 'Report', 'Presentacion'],
             ['custpage_report_criteria_decimal', 'Without Decimals', 'Sin Decimales'],
             ['custpage_report_criteria_subsidiary', 'Subsidiary', 'Subsidiaria'],
@@ -28,7 +28,7 @@ define(['N'],
             ['custpage_report_criteria_year', 'Year', 'Año'],
             ['custpage_report_criteria_month', 'Month', 'Mes'],
             ['custpage_report_group_criteria_2', 'Filters', 'Filtros'],
-            ['custpage_report_group_criteria_1', 'Main', 'Inicio'],
+            ['custpage_report_group_criteria_1', 'Main', 'Principal'],
             ['custpage_report_button_visualize', 'Generate', 'Generar'],
             ['custpage_report_button_export_xls', 'Export', 'Exportar']
         ]

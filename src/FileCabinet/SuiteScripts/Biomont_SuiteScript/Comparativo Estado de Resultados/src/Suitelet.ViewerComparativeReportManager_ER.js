@@ -5,6 +5,7 @@
 define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER'],
 
     function (ServerWidget, ReportManager, Basic) {
+        /** despliegue: customdeploy_rep_comparativo_er */
         /**
          * Defines the Suitelet script trigger point.
          * @param {Object} scriptContext

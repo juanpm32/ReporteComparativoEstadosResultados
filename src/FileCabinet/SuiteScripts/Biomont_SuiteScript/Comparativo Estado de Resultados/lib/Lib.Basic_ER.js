@@ -90,8 +90,8 @@ define(['N'],
         }
 
         const Template = {
-            1: 'GastosIndirectosFabricacion.html',
-            2: 'GastosDetalleTransacciones.html'
+            1: 'GastosIndirectosFabricacion_ER.html',
+            2: 'GastosDetalleTransacciones_ER.html'
         }
 
         const Classes = {
