@@ -37,7 +37,7 @@ define(['N', './Lib.Dao_ER', './Lib.Render_ER', './Lib.Operations_ER'],
 
         const STATIC_DATA = {
             reports: {
-                1: 'Gastos Indirectos de Fabricación',
+                1: 'P&L por Mercado',
                 2: 'Comparativo Gastos de Administracion Operacion',
                 3: 'Comparativo Gastos de Administracion Oficina',
                 4: 'Comparativo Gastos de Venta'

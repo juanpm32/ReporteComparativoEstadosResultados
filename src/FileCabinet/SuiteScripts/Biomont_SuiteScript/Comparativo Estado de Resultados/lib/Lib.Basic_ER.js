@@ -102,19 +102,21 @@ define(['N'],
         }
 
         const Yes_Acc = {
-            'GASTOS_INDIRECTOS': 6,
+            //'GASTOS_INDIRECTOS': 6,
+            'GASTOS_INDIRECTOS': 701,
             'GASTOS_ADM_OP': 6,
             'GASTOS_ADM_OF': 6,
             'GASTOS_VENTAS': 6
         }
 
         const No_Acc = {
-            'GASTOS_INDIRECTOS': [
-                60, 67, 69, 61,
-                6211, 6212, 6214, 6215,
-                6221, 6231, 6241, 6251, 6271, 6273, 6274, 6275, 6277, 6281, 6291,
-                62131111, 62131112, 62131114
-            ],
+            //'GASTOS_INDIRECTOS': [
+            //    60, 67, 69, 61,
+            //    6211, 6212, 6214, 6215,
+            //    6221, 6231, 6241, 6251, 6271, 6273, 6274, 6275, 6277, 6281, 6291,
+            //    62131111, 62131112, 62131114
+            //],
+            'GASTOS_INDIRECTOS': [],
             'GASTOS_ADM_OP': [
                 60, 67, 69, 61
             ],
