@@ -222,15 +222,19 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             let resultTransaction = [];
 
-            let transactionQuery = new Basic.CustomSearch('transaction');
+            // Siguiente seccion agregada VENTA NACIONAL
+            // Siguiente seccion agregada CONCEPTO Mercaderias
+            let transactionQuery11 = new Basic.CustomSearch('transaction');
 
-            transactionQuery.updateFilters([
+            transactionQuery11.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
-                //["accountingperiod.isadjust", "is", "F"],
-                //'AND',
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
                 ['subsidiary', 'anyof', subsidiary],
                 "AND",
                 //['class', 'anyof'].concat(classes)
@@ -250,14 +254,14 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             // transactionQuery.pushColumn(
             //     { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
             // );
-            transactionQuery.pushColumn(
+            transactionQuery11.pushColumn(
                 { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
             );
-            transactionQuery.pushColumn(
+            transactionQuery11.pushColumn(
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            transactionQuery.execute(node => {
+            transactionQuery11.execute(node => {
 
                 //let classId = node.getValue('classId');
                 //let className = node.getValue('className');
@@ -276,16 +280,18 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 })
             });
 
-            //Siguiente seccion agregada
-            let transactionQuery1 = new Basic.CustomSearch('transaction');
+            //Siguiente seccion agregada CONCEPTO Materias Primas
+            let transactionQuery12 = new Basic.CustomSearch('transaction');
 
-            transactionQuery1.updateFilters([
+            transactionQuery12.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
-                //["accountingperiod.isadjust", "is", "F"],
-                //'AND',
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
                 ['subsidiary', 'anyof', subsidiary],
                 "AND",
                 //['class', 'anyof'].concat(classes)
@@ -298,30 +304,39 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ["item.itemid", "contains", "MP00000043"]
             ]);
 
-            transactionQuery1.pushColumn(
+            transactionQuery12.pushColumn(
                 { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
             );
-            transactionQuery1.pushColumn(
+            transactionQuery12.pushColumn(
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            log.debug("length", transactionQuery1.context.columns.length)
+            log.debug("years", years)
 
-            //if (transactionQuery1.context.columns.length === 0) {
-            resultTransaction.push({
-                class: { id: 0, name: 'VENTA NACIONAL' },
-                concept: 'Materias Primas',
-                period: '171',
-                amount: 0
+            years.forEach(year => {
+                resultTransaction.push({
+                    class: { id: 0, name: 'VENTA NACIONAL' },
+                    concept: 'Materias Primas',
+                    period: year,
+                    amount: 0
+                })
             })
-            resultTransaction.push({
-                class: { id: 0, name: 'VENTA NACIONAL' },
-                concept: 'Materias Primas',
-                period: '291',
-                amount: 0
-            })
+
+            //if (transactionQuery12.context.columns.length === 0) {
+            //resultTransaction.push({
+            //    class: { id: 0, name: 'VENTA NACIONAL' },
+            //    concept: 'Materias Primas',
+            //    period: '171',
+            //    amount: 0
+            //})
+            //resultTransaction.push({
+            //    class: { id: 0, name: 'VENTA NACIONAL' },
+            //    concept: 'Materias Primas',
+            //    period: '291',
+            //    amount: 0
+            //})
             //} else {
-            //    transactionQuery1.execute(node => {
+            //    transactionQuery12.execute(node => {
             //
             //        //let classId = node.getValue('classId');
             //        //let className = node.getValue('className');
@@ -343,13 +358,14 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             //}
 
 
+            //Siguiente seccion agregada CONCEPTO PT Nacional
+            let transactionQuery13 = new Basic.CustomSearch('transaction');
 
-            //Siguiente seccion agregada
-            let transactionQuery2 = new Basic.CustomSearch('transaction');
-
-            transactionQuery2.updateFilters([
+            transactionQuery13.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
                 ["accountingperiod.isadjust", "is", "F"],
@@ -370,15 +386,15 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
             ]);
 
-            transactionQuery2.pushColumn(
+            transactionQuery13.pushColumn(
                 { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
             );
-            transactionQuery2.pushColumn(
+            transactionQuery13.pushColumn(
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
 
-            transactionQuery2.execute(node => {
+            transactionQuery13.execute(node => {
 
                 //let classId = node.getValue('classId');
                 //let className = node.getValue('className');
@@ -402,16 +418,18 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             });
 
-            //Siguiente seccion agregada
-            let transactionQuery3 = new Basic.CustomSearch('transaction');
+            //Siguiente seccion agregada CONCEPTO PT Exportación
+            let transactionQuery14 = new Basic.CustomSearch('transaction');
 
-            transactionQuery3.updateFilters([
+            transactionQuery14.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
-                //["accountingperiod.isadjust", "is", "F"],
-                //'AND',
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
                 ['subsidiary', 'anyof', subsidiary],
                 "AND",
                 //['class', 'anyof'].concat(classes)
@@ -428,15 +446,15 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ['customer.internalid', 'anyof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
             ]);
 
-            transactionQuery3.pushColumn(
+            transactionQuery14.pushColumn(
                 { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
             );
-            transactionQuery3.pushColumn(
+            transactionQuery14.pushColumn(
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
 
-            transactionQuery3.execute(node => {
+            transactionQuery14.execute(node => {
 
                 //let classId = node.getValue('classId');
                 //let className = node.getValue('className');
@@ -453,13 +471,742 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                 resultTransaction.push({
                     class: { id: 0, name: 'VENTA NACIONAL' },
-                    concept: 'PT Exportación',
+                    concept: 'PT Exportacion',
                     period: periodId,
                     amount: Number(amount)
                 })
 
             });
 
+            //Siguiente seccion agregada COSTO DE VENTA
+            //Siguiente seccion agregada CONCEPTO Mercaderias
+            let transactionQuery21 = new Basic.CustomSearch('transaction');
+
+            transactionQuery21.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                //['class', 'anyof'].concat(classes)
+                //'AND',
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"]
+                ['account.number', 'startswith', 696]
+            ]);
+
+            transactionQuery21.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery21.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery21.execute(node => {
+
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                if (!periodId) {
+                    periodId = '171';
+                }
+
+                resultTransaction.push({
+                    class: { id: 1, name: 'COSTO DE VENTAS' },
+                    concept: 'Mercaderias',
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada CONCEPTO Materias Primas
+            let transactionQuery22 = new Basic.CustomSearch('transaction');
+
+            transactionQuery22.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                //['class', 'anyof'].concat(classes)
+                //'AND',
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"]
+                ['account.number', 'startswith', 691]
+            ]);
+
+            transactionQuery22.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery22.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery22.execute(node => {
+
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                if (!periodId) {
+                    periodId = '171';
+                }
+
+                resultTransaction.push({
+                    class: { id: 1, name: 'COSTO DE VENTAS' },
+                    concept: 'Materias Primas',
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada CONCEPTO Venta Nacional
+            let transactionQuery23 = new Basic.CustomSearch('transaction');
+
+            transactionQuery23.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                //['class', 'anyof'].concat(classes)
+                //'AND',
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"]
+                [
+                    ['account.number', 'startswith', 692],
+                    "OR",
+                    ['account.number', 'startswith', 699]
+                ],
+                "AND",
+                ['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
+            ]);
+
+            transactionQuery23.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery23.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery23.execute(node => {
+
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                if (!periodId) {
+                    periodId = '171';
+                }
+
+                resultTransaction.push({
+                    class: { id: 1, name: 'COSTO DE VENTAS' },
+                    concept: 'PT Nacional',
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada CONCEPTO Exportación
+            let transactionQuery24 = new Basic.CustomSearch('transaction');
+
+            transactionQuery24.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                //['class', 'anyof'].concat(classes)
+                //'AND',
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"]
+                [
+                    ['account.number', 'startswith', 692]
+                    //"OR",
+                    //['account.number', 'startswith', 699]
+                ],
+                "AND",
+                ['customer.internalid', 'anyof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
+            ]);
+
+            transactionQuery24.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery24.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery24.execute(node => {
+
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                if (!periodId) {
+                    periodId = '291';
+                }
+
+                resultTransaction.push({
+                    class: { id: 1, name: 'COSTO DE VENTAS' },
+                    concept: 'PT Exportacion',
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada CONCEPTO Desvalorizacion Existencias
+            let transactionQuery25 = new Basic.CustomSearch('transaction');
+
+            transactionQuery25.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                //['class', 'anyof'].concat(classes)
+                //'AND',
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"]
+                ['account.number', 'startswith', 695]
+            ]);
+
+            transactionQuery25.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery25.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery25.execute(node => {
+
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                /*if (!periodId) {
+                    periodId = '171';
+                }*/
+
+                resultTransaction.push({
+                    class: { id: 1, name: 'COSTO DE VENTAS' },
+                    concept: 'Desvalorizacion Existencias',
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada GASTO ADMINISTRATIVO OPERACIONAL
+            let transactionQuery31 = new Basic.CustomSearch('transaction');
+
+            transactionQuery31.updateFilters([
+                ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                "AND",
+                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                //"AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                ['class', 'anyof'].concat([33,1,2,3,4,5,6,7]),
+                "AND",
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                ["type", "noneof", "PurchReq"],
+                "AND",
+                ['account.number', 'startswith', 6],
+                "AND",
+                ["account.number","doesnotstartwith",[60,61,67,69]]
+            ]);
+
+            transactionQuery31.pushColumn(
+                { name: 'class', summary: 'GROUP', label: 'classId' }
+            );
+            transactionQuery31.pushColumn(
+                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            );
+            transactionQuery31.pushColumn(
+                { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            );
+            transactionQuery31.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery31.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery31.execute(node => {
+
+                let classId = node.getValue('classId');
+                let className = node.getValue('className');
+                let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                /*if (!periodId) {
+                    periodId = '171';
+                }*/
+
+                resultTransaction.push({
+                    class: { id: 3, name: 'GASTO ADMINISTRATIVO OPERACIONAL' },
+                    concept: className,
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada GASTO ADMINISTRATIVO OFICINA
+            let transactionQuery41 = new Basic.CustomSearch('transaction');
+
+            transactionQuery41.updateFilters([
+                ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                "AND",
+                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                //"AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                ['class', 'anyof'].concat([29, 14, 15, 16, 17, 18, 19, 20]),
+                "AND",
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                ["type", "noneof", "PurchReq"],
+                "AND",
+                ['account.number', 'startswith', 6],
+                "AND",
+                ["account.number","doesnotstartwith",[60,61,67,69]]
+            ]);
+
+            transactionQuery41.pushColumn(
+                { name: 'class', summary: 'GROUP', label: 'classId' }
+            );
+            transactionQuery41.pushColumn(
+                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            );
+            transactionQuery41.pushColumn(
+                { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            );
+            transactionQuery41.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery41.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery41.execute(node => {
+
+                let classId = node.getValue('classId');
+                let className = node.getValue('className');
+                let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                /*if (!periodId) {
+                    periodId = '171';
+                }*/
+
+                resultTransaction.push({
+                    class: { id: 4, name: 'GASTO ADMINISTRATIVO OFICINA' },
+                    concept: className,
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada GASTO DE VENTA
+            let transactionQuery61 = new Basic.CustomSearch('transaction');
+
+            transactionQuery61.updateFilters([
+                ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                "AND",
+                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                //"AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                ['class', 'anyof'].concat([21, 22, 23, 24, 25, 26, 27]),
+                "AND",
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                ["type", "noneof", "PurchReq"],
+                "AND",
+                ['account.number', 'startswith', 6],
+                "AND",
+                ["account.number","doesnotstartwith",[60,61,67,69]]
+            ]);
+
+            transactionQuery61.pushColumn(
+                { name: 'class', summary: 'GROUP', label: 'classId' }
+            );
+            transactionQuery61.pushColumn(
+                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            );
+            transactionQuery61.pushColumn(
+                { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            );
+            transactionQuery61.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery61.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery61.execute(node => {
+
+                let classId = node.getValue('classId');
+                let className = node.getValue('className');
+                let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                /*if (!periodId) {
+                    periodId = '171';
+                }*/
+
+                resultTransaction.push({
+                    class: { id: 6, name: 'GASTO DE VENTA' },
+                    concept: className,
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada GASTOS FINANCIEROS
+            let transactionQuery81 = new Basic.CustomSearch('transaction');
+
+            transactionQuery81.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                //"AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                //"AND",
+                //['class', 'anyof'].concat([21, 22, 23, 24, 25, 26, 27]),
+                //"AND",
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"],
+                "AND",
+                [
+                    ['account.number', 'startswith', 67311111],
+                    "OR",
+                    ['account.number', 'startswith', 67311112],
+                    "OR",
+                    ['account.number', 'startswith', 67311113],
+                    "OR",
+                    ['account.number', 'startswith', 67311115],
+                    "OR",
+                    ['account.number', 'startswith', 67311114],
+                    "OR",
+                    ['account.number', 'startswith', 67321111],
+                    "OR",
+                    ['account.number', 'startswith', 67141111],
+                    "OR",
+                    ['account.number', 'startswith', 67141112],
+                    "OR",
+                    ['account.number', 'startswith', 67351111],
+                    "OR",
+                    ['account.number', 'startswith', 67361111],
+                    "OR",
+                    ['account.number', 'startswith', 67111111],
+                    "OR",
+                    ['account.number', 'startswith', 67121111]
+
+                ] //[67311111,67311112,67311113,67311115,67311114,67321111,67141111,67141112,67351111,67361111,67111111,67121111]
+                //"AND",
+                //["account.number","doesnotstartwith",[75,77211112,77611111]], //[75,77211112,77611111]
+                //"AND", 
+                //["accounttype","anyof","OthIncome"],
+                /*"AND", 
+                ["account","anyof",[6477,6201]]*/
+            ]);
+
+            /*transactionQuery81.pushColumn(
+                { name: 'class', summary: 'GROUP', label: 'classId' }
+            );
+            transactionQuery81.pushColumn(
+                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            );
+            transactionQuery81.pushColumn(
+                { name: 'number', join: 'account', summary: 'GROUP', label: 'number' }
+            );*/
+            transactionQuery81.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery81.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery81.execute(node => {
+
+                /*let classId = node.getValue('classId');
+                let className = node.getValue('className');
+                let concept = node.getValue('concept');*/
+
+                //let number = node.getValue('number');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                /*if (!periodId) {
+                    periodId = '171';
+                }*/
+
+                resultTransaction.push({
+                    class: { id: 8, name: 'GASTOS FINANCIEROS' },
+                    concept: 'GASTOS FINANCIEROS',
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada INGRESOS FINANCIEROS
+            let transactionQuery91 = new Basic.CustomSearch('transaction');
+
+            transactionQuery91.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                //"AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                //"AND",
+                //["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                //"AND",
+                //['class', 'anyof'].concat([21, 22, 23, 24, 25, 26, 27]),
+                //"AND",
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"],
+                "AND",
+                /*[ // PRIMERA CONDICION
+                    ["account.number","doesnotstartwith",75],
+                    "AND",
+                    ["account.number","doesnotstartwith",77211112],
+                    "AND",
+                    ["account.number","doesnotstartwith",77611111]
+                ],
+                "AND", */
+                [ 
+                    ["account.number","startswith",77211112],
+                    "OR",
+                    ["account.number","startswith",67331111]
+                ],
+                "AND",
+                ["accounttype","anyof","OthIncome"]
+            ]);
+
+            /*transactionQuery81.pushColumn(
+                { name: 'class', summary: 'GROUP', label: 'classId' }
+            );
+            transactionQuery81.pushColumn(
+                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            );*/
+            transactionQuery91.pushColumn(
+                { name: 'number', join: 'account', summary: 'GROUP', label: 'number' }
+            );
+            transactionQuery91.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery91.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery91.execute(node => {
+
+                /*let classId = node.getValue('classId');
+                let className = node.getValue('className');
+                let concept = node.getValue('concept');*/
+
+                let number = node.getValue('number');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                /*if (!periodId) {
+                    periodId = '171';
+                }*/
+
+                resultTransaction.push({
+                    class: { id: 9, name: 'INGRESOS FINANCIEROS' },
+                    concept: number,
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
+
+            //Siguiente seccion agregada INGRESOS DIVERSOS
+            let transactionQuery111 = new Basic.CustomSearch('transaction');
+
+            transactionQuery111.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                //"AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                //"AND",
+                //['class', 'anyof'].concat([21, 22, 23, 24, 25, 26, 27]),
+                //"AND",
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"],
+                //"AND",
+                //["account.number","doesnotstartwith",[75,77211112,77611111]], //[75,77211112,77611111]
+                //"AND", 
+                //["accounttype","anyof","OthIncome"],
+                "AND",
+                ['account.number', 'startswith', 75]
+                /*"AND", 
+                ["account","anyof",[6477,6201]]*/
+            ]);
+
+            /*transactionQuery81.pushColumn(
+                { name: 'class', summary: 'GROUP', label: 'classId' }
+            );
+            transactionQuery81.pushColumn(
+                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            );
+            transactionQuery81.pushColumn(
+                { name: 'number', join: 'account', summary: 'GROUP', label: 'number' }
+            );*/
+            transactionQuery111.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery111.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+
+            transactionQuery111.execute(node => {
+
+                /*let classId = node.getValue('classId');
+                let className = node.getValue('className');
+                let concept = node.getValue('concept');*/
+
+                //let number = node.getValue('number');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                /*if (!periodId) {
+                    periodId = '171';
+                }*/
+
+                resultTransaction.push({
+                    class: { id: 11, name: 'INGRESOS DIVERSOS' },
+                    concept: 'INGRESOS DIVERSOS',
+                    period: periodId,
+                    amount: Number(amount)
+                })
+
+            });
 
 
             log.debug("resultTransaction", resultTransaction)

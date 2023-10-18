@@ -36,8 +36,6 @@ define(['N', './Lib.Basic_ER'],
             return result;
         }
 
-
-
         function createAccountingQuarterByYear(year) {
             let result = [];
 

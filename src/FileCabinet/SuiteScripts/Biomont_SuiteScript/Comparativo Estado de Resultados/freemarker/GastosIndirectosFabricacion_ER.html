@@ -6,35 +6,58 @@
             <i class="big file green excel icon" onclick="exportToExcel()"></i>
         </div>
         <div class="bm-container">
-            <div class="bm-container-header">
+            <!-- <div class="bm-container-header">
                 <table class="bm-report-table" id="bm-report-table-header">
                     <thead>
                         <tr>
-                            <th>Concepto</th>
+                            <th nowrap>Concepto</th>
                             <#list context.headers as header>
-                                <th class="right">
+                                <th nowrap class="right">
                                     ${header.current.text}
                                     <br>
                                     <b style="text-transform: none;">Monto</b>
                                 </th>
-                                <th class="right">
+                                <th nowrap class="right">
                                     ${header.last.text}
                                     <br>
                                     <b style="text-transform: none;">Monto</b>
                                 </th>
-                                <th class="right">
+                                <th nowrap class="right">
                                     <b style="text-transform: none;">Variación</b>
                                 </th>
-                                <th class="right">
+                                <th nowrap class="right">
                                     <b style="text-transform: none;">Var %</b>
                                 </th>
                             </#list>
                         </tr>
                     </thead>
                 </table>
-            </div>
+            </div> -->
             <div class="bm-container-body">
                 <table class="bm-report-table" id="bm-report-table-body">
+                    <thead>
+                        <tr>
+                            <th nowrap>Concepto</th>
+                            <#list context.headers as header>
+                                <th nowrap class="right">
+                                    ${header.current.text}
+                                    <br>
+                                    <b style="text-transform: none;">Monto</b>
+                                </th>
+                                <th nowrap class="right">
+                                    ${header.last.text}
+                                    <br>
+                                    <b style="text-transform: none;">Monto</b>
+                                </th>
+                                <th nowrap class="right">
+                                    <b style="text-transform: none;">Variación</b>
+                                </th>
+                                <th nowrap class="right">
+                                    <b style="text-transform: none;">Var %</b>
+                                </th>
+                            </#list>
+                        </tr>
+                    </thead>
                     <tbody>
                         <#list context.centers as center>
                             <tr bm-parent="${center.id}">
@@ -133,7 +156,7 @@
                             </tr>
                         </#list>
                         <tr class="summary-total">
-                            <td>Gastos Indirectos (Total)</td>
+                            <td>Estado de Resultados (Total)</td>
                             <#list context.headers as header>
                                 <#assign current=context.total[header.current.id] />
                                 <#assign last=context.total[header.last.id] />
@@ -161,6 +184,7 @@
             let row = e.parentNode.parentNode;
             let groupId = row.getAttribute('bm-parent');
             let collapse = row.getAttribute('collapse');
+            
 
             let children = document.querySelectorAll('[bm-child="' + groupId + '"]')
             let titleColumns = row.querySelectorAll(`.title`);
