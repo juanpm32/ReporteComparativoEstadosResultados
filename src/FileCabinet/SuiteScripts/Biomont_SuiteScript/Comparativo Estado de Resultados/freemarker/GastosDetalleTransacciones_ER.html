@@ -1,193 +1,185 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
-<#setting number_format=",##0.00">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/components/icon.min.css" />
-    <div class="bm-viewer-det">
-        <div class="bm-viewer-action">
-            <i class="big file green excel icon" onclick="exportToExcel()"></i>
+
+<#setting number_format=",##0.00" />
+<#assign symbol="S/. " />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fomantic-ui/2.9.3/components/icon.min.css" />
+<div class="bm-viewer-det">
+    <div class="bm-viewer-action">
+        <i class="big file green excel icon" onclick="exportToExcel()" style="margin-left: 10px;"></i>
+        <span style="font-size: 18px;">|</span>
+        <i style="font-size: 15px;" class="expand arrows alternate icon" onclick="expandAllLines()"></i>
+        <i style="font-size: 15px;" class="compress arrows alternate icon" onclick="collapseAllLines()"></i>
+    </div>
+    <div class="bm-container">
+        <div class="bm-container-header">
+            <!-- <table class="bm-report-table" id="bm-report-table-header">
+                <thead>
+                    <tr>
+                        <th style="min-width:350px;max-width: 350px;">Cuenta</th>
+                        <th style="min-width:120px;max-width:120px">Concepto</th>
+                        <th style="min-width:80px">Tipo</th>
+                        <th>Fecha</th>
+                        <th>Nro. Doc.</th>
+                        <th style="min-width:120px">Nro. Doc (Diario)</th>
+                        <th style="min-width:200px">Nombre</th>
+                        <th>Importe</th>
+                        <th>Importe Me</th>
+                        <th>Moneda</th>
+                        <th>T.C.</th>
+                        <th style="min-width:300px;max-width: 300px;">Descripcion Nota</th>
+                        <th style="min-width:300px;max-width: 300px;">Nota</th>
+                    </tr>
+                </thead>
+            </table> -->
         </div>
-        <div class="bm-container">
-            <div class="bm-container-header">
-                <table class="bm-report-table" id="bm-report-table-header">
-                    <thead>
-                        <tr>
-                            <th style="min-width:350px;max-width: 350px;">Cuenta</th>
-                            <th style="min-width:120px;max-width:120px">Concepto</th>
-                            <th style="min-width:80px">Tipo</th>
-                            <th>Fecha</th>
-                            <th>Nro. Doc.</th>
-                            <th style="min-width:120px">Nro. Doc (Diario)</th>
-                            <th style="min-width:200px">Nombre</th>
-                            <th>Importe</th>
-                            <th>Importe Me</th>
-                            <th>Moneda</th>
-                            <th>T.C.</th>
-                            <th style="min-width:300px;max-width: 300px;">Descripcion Nota</th>
-                            <th style="min-width:300px;max-width: 300px;">Nota</th>
+        <div class="bm-container-body">
+            <table class="bm-report-table">
+                <thead>
+                    <tr>
+                        <th style="min-width:350px;max-width: 350px;">Cuenta</th>
+                        <th style="min-width:120px;max-width:120px">Concepto</th>
+                        <th style="min-width:80px">Tipo</th>
+                        <th>Fecha</th>
+                        <th>Nro. Doc.</th>
+                        <th style="min-width:120px">Nro. Doc (Diario)</th>
+                        <th style="min-width:200px">Nombre</th>
+                        <th>Importe</th>
+                        <th>Importe Me</th>
+                        <th>Moneda</th>
+                        <th>T.C.</th>
+                        <th style="min-width:300px;max-width: 300px;">Descripcion Nota</th>
+                        <th style="min-width:300px;max-width: 300px;">Nota</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <#list context.accounts as account>
+                        <tr bm-parent="${account.id}">
+                            <td style="min-width:350px;max-width: 350px;display:flex;gap:3"><i class="minus square icon"
+                                    onclick="groupLines(this)" bm-type="group"></i><span>${account.name}</span></td>
+                            <td style="min-width:120px;max-width:120px"></td>
+                            <td style="min-width:80px"></td>
+                            <td></td>
+                            <td></td>
+                            <td style="min-width:120px;max-width: 120px;"></td>
+                            <td style="min-width:200px;max-width: 200px;"></td>
+                            <td>${symbol}${account.total}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style="min-width:300px;max-width: 300px;"></td>
+                            <td style="min-width:300px;max-width: 300px;"></td>
                         </tr>
-                    </thead>
-                </table>
-            </div>
-            <div class="bm-container-body">
-                <table class="bm-report-table" id="bm-report-table-body">
-                    <tbody>
-                        <#list context.accounts as account>
-                            <tr bm-parent="${account.id}">
-                                <td style="min-width:350px;max-width: 350px;display:flex;gap:3"><i
-                                        class="minus square icon"
-                                        onclick="groupLines(this)"></i><span>${account.name}</span></td>
-                                <td style="min-width:120px;max-width:120px"></td>
-                                <td style="min-width:80px"></td>
-                                <td></td>
-                                <td></td>
-                                <td style="min-width:120px;max-width: 120px;"></td>
-                                <td style="min-width:200px;max-width: 200px;"></td>
-                                <td></td>
-                                <td>${account.total}</td>
-                                <td></td>
-                                <td></td>
-                                <td style="min-width:300px;max-width: 300px;"></td>
-                                <td style="min-width:300px;max-width: 300px;"></td>
+                        <#list account.lines as line>
+                            <tr class="trans" bm-trans="${line.id}" bm-child="${account.id}">
+                                <td style="min-width:350px;max-width: 350px;"></td>
+                                <td style="min-width:120px;max-width:120px">${line.concept}</td>
+                                <td style="min-width:80px">${line.type}</td>
+                                <td>${line.date}</td>
+                                <td>${line.number}</td>
+                                <td style="min-width:120px;max-width: 120px;">${line.journalNumber}</td>
+                                <td style="min-width:200px;max-width: 200px;">${line.entity}</td>
+                                <td>${symbol}${line.amount}</td>
+                                <td>${line.fxamount}</td>
+                                <td>${line.currency}</td>
+                                <td>${line.rate}</td>
+                                <td style="min-width:300px;max-width: 300px;">${line.memo}</td>
+                                <td style="min-width:300px;max-width: 300px;">${line.memomain}</td>
                             </tr>
-                            <#list account.lines as line>
-                                <tr class="trans" bm-trans="${line.id}" bm-child="${account.id}">
-                                    <td style="min-width:350px;max-width: 350px;"></td>
-                                    <td style="min-width:120px;max-width:120px">${line.concept}</td>
-                                    <td style="min-width:80px">${line.type}</td>
-                                    <td>${line.date}</td>
-                                    <td>${line.number}</td>
-                                    <td style="min-width:120px;max-width: 120px;">${line.journalNumber}</td>
-                                    <td style="min-width:200px;max-width: 200px;">${line.entity}</td>
-                                    <td>${line.amount}</td>
-                                    <td>${line.amount}</td>
-                                    <td>${line.currency}</td>
-                                    <td>${line.rate}</td>
-                                    <td style="min-width:300px;max-width: 300px;">${line.memo}</td>
-                                    <td style="min-width:300px;max-width: 300px;">${line.memomain}</td>
-                                </tr>
-                            </#list>
                         </#list>
-                    </tbody>
-                </table>
-            </div>
+                    </#list>
+                    <tr class="summary-total">
+                        <td>Total</td>
+                        <td style="min-width:120px;max-width:120px"></td>
+                        <td style="min-width:80px"></td>
+                        <td></td>
+                        <td></td>
+                        <td style="min-width:120px;max-width: 120px;"></td>
+                        <td style="min-width:200px;max-width: 200px;"></td>
+                        <td>${symbol}${context.summary.total}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="min-width:300px;max-width: 300px;"></td>
+                        <td style="min-width:300px;max-width: 300px;"></td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    <script>
+<script>
 
-        function groupLines(e) {
-
-            let row = e.parentNode.parentNode;
-            let groupId = row.getAttribute('bm-parent');
-            let collapse = row.getAttribute('collapse');
-
-            let children = document.querySelectorAll('[bm-child="' + groupId + '"]')
-            let titleColumns = row.querySelectorAll(`.title`);
-
-            if (collapse == 'T') {
-                e.classList.remove('plus');
-                e.classList.add('minus');
-                row.setAttribute('collapse', 'F');
-                children.forEach(current => {
-                    current.style.display = '';
-                });
-                titleColumns.forEach(current => {
-                    current.classList.add('hide');
-                })
-
-            } else {
-                e.classList.remove('minus');
-                e.classList.add('plus');
-                row.setAttribute('collapse', 'T');
-                children.forEach(current => {
-                    current.style.display = 'none';
-                });
-                titleColumns.forEach(current => {
-                    current.classList.remove('hide');
-                })
-            }
-        }
-
-
-        document.querySelectorAll('.trans').forEach(node => {
-
-            node.addEventListener('click', () => {
-
-                let transaction = node.getAttribute('bm-trans');
-                window.open('/app/accounting/transactions/transaction.nl?id=' + transaction);
-            })
+    function collapseAllLines() {
+        document.querySelectorAll('[bm-type="group"]').forEach(node => {
+            groupLines(node, 'F')
         })
+    }
 
-        function exportToExcel() {
+    function expandAllLines() {
+        document.querySelectorAll('[bm-type="group"]').forEach(node => {
+            groupLines(node, 'T')
+        })
+    }
 
-            // Crear una matriz vacía para almacenar los datos de la tabla
-            let tableMatrix = []
+    function groupLines(e, _collapse) {
 
-            let table = document.getElementById('bm-report-table-header');
+        let row = e.parentNode.parentNode;
+        let groupId = row.getAttribute('bm-parent');
+        let collapse = _collapse ? _collapse : row.getAttribute('collapse');
 
-            // Recorrer las filas de la tabla
-            for (let i = 0; i < table.rows.length; i++) {
-                let row = table.rows[i];
-                let rowMatrix = [];
+        let children = document.querySelectorAll('[bm-child="' + groupId + '"]')
+        let titleColumns = row.querySelectorAll(`.title`);
 
-                // Recorrer las celdas de la fila
-                for (let j = 0; j < row.cells.length; j++) {
-                    let cell = row.cells[j];
-                    rowMatrix.push(cell.innerText);
-                }
+        if (collapse == 'T') {
+            e.classList.remove('plus');
+            e.classList.add('minus');
+            row.setAttribute('collapse', 'F');
+            children.forEach(current => {
+                current.style.display = '';
+            });
+            titleColumns.forEach(current => {
+                current.classList.add('hide');
+            })
 
-                // Agregar la fila a la matriz
-                tableMatrix.push(rowMatrix);
-            }
-
-            // Obtener la referencia a la tabla
-            table = document.getElementById('bm-report-table-body');
-
-            // Recorrer las filas de la tabla
-            for (let i = 0; i < table.rows.length; i++) {
-                let row = table.rows[i];
-                let rowMatrix = [];
-
-                // Recorrer las celdas de la fila
-                for (let j = 0; j < row.cells.length; j++) {
-                    let cell = row.cells[j];
-                    rowMatrix.push(cell.innerText);
-                }
-
-                // Agregar la fila a la matriz
-                tableMatrix.push(rowMatrix);
-            }
-
-            // Crea un nuevo libro de Excel
-            const wb = XLSX.utils.book_new();
-
-            // Crea una hoja de trabajo
-            const ws = XLSX.utils.aoa_to_sheet(tableMatrix);
-
-            // Agrega la hoja de trabajo al libro
-            XLSX.utils.book_append_sheet(wb, ws, "Tabla");
-
-            // Convierte el libro de Excel a un archivo de datos
-            const excelData = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-
-            // Crea un objeto Blob para el archivo Excel
-            const blob = new Blob([excelData], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-
-            // Crea un objeto URL para el blob
-            const url = window.URL.createObjectURL(blob);
-
-            // Crea un enlace para descargar el archivo
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'ReporteDetallado_ER.xlsx';
-
-            // Añade el enlace al documento y haz clic en él para descargar
-            document.body.appendChild(a);
-            a.click();
-
-            // Limpia el objeto URL y elimina el enlace
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
+        } else {
+            e.classList.remove('minus');
+            e.classList.add('plus');
+            row.setAttribute('collapse', 'T');
+            children.forEach(current => {
+                current.style.display = 'none';
+            });
+            titleColumns.forEach(current => {
+                current.classList.remove('hide');
+            })
         }
+    }
 
 
-    </script>
+    document.querySelectorAll('.trans').forEach(node => {
+
+        node.addEventListener('click', () => {
+
+            let transaction = node.getAttribute('bm-trans');
+            window.open('/app/accounting/transactions/transaction.nl?id=' + transaction);
+        })
+    })
+
+    function exportToExcel() {
+
+        const xlsHref = window.location.href + '&xls=T';
+
+        const a = document.createElement('a');
+        a.href = xlsHref;
+
+        // Añade el enlace al documento y haz clic en él para descargar
+        document.body.appendChild(a);
+        a.click();
+
+        // Limpia el objeto URL y elimina el enlace
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    }
+
+
+</script>

@@ -231,7 +231,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery11.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -288,7 +288,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery12.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -390,7 +390,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery13.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -452,7 +452,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery14.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -516,7 +516,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery21.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -572,7 +572,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery22.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -628,7 +628,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery23.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -690,7 +690,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery24.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -743,7 +743,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         amount: Number(amount)
                     })
                 }
-                
+
             });
 
             //Siguiente seccion agregada CONCEPTO Desvalorizacion Existencias
@@ -752,7 +752,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery25.updateFilters([
                 //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 //"AND",
-                ["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -825,7 +825,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                     }
                 }
             });
-            
+
             // Convierte el objeto en un array de resultados
             const result31 = Object.values(utilidadBrutaData);
 
@@ -865,7 +865,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number","doesnotstartwith",[60,61,67,69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
             ]);
 
             transactionQuery31.pushColumn(
@@ -933,7 +933,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number","doesnotstartwith",[60,61,67,69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
             ]);
 
             transactionQuery41.pushColumn(
@@ -1006,7 +1006,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 const class4Amount = accum_gasto_administrativo[3][period];
                 const class5Amount = accum_gasto_administrativo[4] && accum_gasto_administrativo[4][period] ? accum_gasto_administrativo[4][period] : 0;
                 const totalAmount = class4Amount + class5Amount;
-              
+
                 // Crear el objeto resultante y agregarlo al resultado
                 result51.push({
                     class: { id: 5, name: "GASTO ADMINISTRATIVO" },
@@ -1014,7 +1014,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                     period: period,
                     amount: totalAmount,
                 });
-              }
+            }
 
             result51.forEach(node => {
 
@@ -1049,7 +1049,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number","doesnotstartwith",[60,61,67,69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
             ]);
 
             transactionQuery61.pushColumn(
@@ -1091,7 +1091,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         amount: Number(amount)
                     })
                 }
-                
+
             });
 
             // Crear un objeto para mantener un seguimiento de las acumulaciones por class.id
@@ -1222,7 +1222,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         period: periodId,
                         amount: Number(amount) * -1
                     })
-                } 
+                }
 
             });
 
@@ -1243,14 +1243,14 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ["type", "noneof", "PurchReq"],
                 "AND",
                 [
-                    ["account.number","doesnotstartwith",75],
+                    ["account.number", "doesnotstartwith", 75],
                     "AND",
-                    ["account.number","doesnotstartwith",77211112],
+                    ["account.number", "doesnotstartwith", 77211112],
                     "AND",
-                    ["account.number","doesnotstartwith",77611111]
+                    ["account.number", "doesnotstartwith", 77611111]
                 ],
-                "AND", 
-                ["accounttype","anyof","OthIncome"]
+                "AND",
+                ["accounttype", "anyof", "OthIncome"]
             ]);
 
             transactionQuery91.pushColumn(
@@ -1274,7 +1274,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                 let amount = node.getValue('amount');
 
-                if(periodId){
+                if (periodId) {
                     resultTransaction.push({
                         class: { id: 9, name: 'INGRESOS FINANCIEROS' },
                         concept: 'INGRESOS FINANCIEROS',
@@ -1285,7 +1285,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             });
 
-            
+
             //Siguiente seccion agregada INGRESOS FINANCIEROS
             let transactionQuery92 = new Basic.CustomSearch('transaction');
 
@@ -1300,7 +1300,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['subsidiary', 'anyof', subsidiary],
                 "AND",
-                ["account","anyof","6477","6201"]
+                ["account", "anyof", "6477", "6201"]
             ]);
 
             //transactionQuery81.pushColumn(
@@ -1333,15 +1333,15 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                 let amount = node.getValue('amount');
 
-                if(number==='67331111'){
-                    amount=amount*-1;
+                if (number === '67331111') {
+                    amount = amount * -1;
                 }
 
                 //if (!periodId) {
                 //    periodId = '171';
                 //}
-                
-                if(periodId){
+
+                if (periodId) {
                     resultTransaction.push({
                         class: { id: 9, name: 'INGRESOS FINANCIEROS' },
                         concept: 'INGRESOS FINANCIEROS', //SWAP
@@ -1401,7 +1401,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 //    periodId = '171';
                 //}
 
-                if(periodId){
+                if (periodId) {
                     resultTransaction.push({
                         class: { id: 10, name: 'INGRESOS DIVERSOS' },
                         concept: 'INGRESOS DIVERSOS',
@@ -1409,7 +1409,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         amount: Number(amount)
                     })
                 }
-                
+
             });
 
             //Siguiente seccion agregada DIFERENCIA DE CAMBIO
@@ -1426,7 +1426,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['subsidiary', 'anyof', subsidiary],
                 "AND",
-                ["account","anyof","6207","6483"]
+                ["account", "anyof", "6207", "6483"]
             ]);
 
             transactionQuery111.pushColumn(
@@ -1456,11 +1456,11 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 //    periodId = '171';
                 //}
 
-                if(number==='67611111'){
-                    amount=amount*-1;
+                if (number === '67611111') {
+                    amount = amount * -1;
                 }
-                
-                if(periodId){
+
+                if (periodId) {
                     resultTransaction.push({
                         class: { id: 11, name: 'DIFERENCIA DE CAMBIO' },
                         concept: 'DIFERENCIA DE CAMBIO',
@@ -1468,7 +1468,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         amount: Number(amount)
                     })
                 }
-                
+
             });
 
             // Crear un objeto para mantener un seguimiento de las acumulaciones por class.id
@@ -1619,6 +1619,15 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                     amount: Number(node.amount)
                 })
 
+            });
+
+            //resultTransaction.sort((a, b) => a.class.id - b.class.id);
+
+            resultTransaction.sort(function (a, b) {
+                if (a.class.id !== b.class.id) {
+                    return a.class.id - b.class.id;
+                }
+                return a.concept.localeCompare(b.concept);
             });
 
             log.debug("resultTransaction", resultTransaction)
@@ -1811,7 +1820,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         //     return -1;
                         // }
                         // return 0;
-                        return Number(b.current) - Number(a.current);
+                        return a.name - b.name;
                     });
                 }
 
@@ -1840,9 +1849,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                 let arrayCenters = Object.values(costCenterMap);
 
-                arrayCenters = arrayCenters.sort((a, b) => {
+                /*arrayCenters = arrayCenters.sort((a, b) => {
                     return b.current - a.current;
-                });
+                });*/
 
                 log.debug('summaryMap', summaryMap);
 

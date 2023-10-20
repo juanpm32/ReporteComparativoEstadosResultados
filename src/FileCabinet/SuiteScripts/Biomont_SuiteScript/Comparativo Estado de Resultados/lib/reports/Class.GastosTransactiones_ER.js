@@ -14,7 +14,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             4: 'GASTOS_VENTAS'
         }
 
-        function createAccountNumberFilter(view) {
+        /*function createAccountNumberFilter(view) {
             let filter = ['AND'];
             filter.push(['account.number', 'startswith', Basic.Account.True[view]]);
 
@@ -25,7 +25,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             });
 
             return filter;
-        }
+        }*/
 
         function createTransactionDetailsByMonth(periods, subsidiary, view, concept, selectClass) {
 
@@ -35,21 +35,21 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             let transactionQuery = new Basic.CustomSearch('transaction');
 
-            let classList = Basic.Classes[view];
-            if (selectClass) {
-                classList = selectClass;
-            }
+            //let classList = Basic.Classes[view];
+            //if (selectClass) {
+            //    classList = selectClass;
+            //}
 
-            let conceptFilter = [];
-            if (concept) {
-                conceptFilter = ["account.custrecord_bio_cam_cuenta_concepto", "is", concept];
-            } else {
-                conceptFilter = ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ''];
-            }
+            //let conceptFilter = [];
+            //if (concept) {
+            //    conceptFilter = ["account.custrecord_bio_cam_cuenta_concepto", "is", concept];
+            //} else {
+            //    conceptFilter = ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ''];
+            //}
 
             transactionQuery.updateFilters([
-                conceptFilter,
-                "AND",
+                //conceptFilter,
+                //"AND",
                 [
                     ["accountingperiod.internalid", "anyof"].concat(periods),
                     'OR',
@@ -59,12 +59,12 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ["accountingperiod.isadjust", "is", "F"],
                 'AND',
                 ['subsidiary', 'anyof', subsidiary],
-                "AND",
-                ['class', 'anyof'].concat(classList),
+                //"AND",
+                //['class', 'anyof'].concat(classList),
                 "AND",
                 ["type", "noneof", "PurchReq"]
-            ].concat(createAccountNumberFilter(view))
-            );
+                //].concat(createAccountNumberFilter(view))
+            ]);
             transactionQuery.pushColumn(
                 { name: 'internalid', label: 'id' }
             );

@@ -84,14 +84,18 @@ define(['N'],
                 'GASTOS_VENTAS': 4,
                 'GASTOS_ADM_OP': 2,
                 'GASTOS_ADM_OF': 3,
-                'GASTOS_DETALLES': 2
+                'GASTOS_DETALLES': 2,
+                'GASTOS_COMPARATIVOS_XLS': 3,
+                'GASTOS_DETALLES_XLS': 4
             }
 
         }
 
         const Template = {
             1: 'GastosIndirectosFabricacion_ER.html',
-            2: 'GastosDetalleTransacciones_ER.html'
+            2: 'GastosDetalleTransacciones_ER.html',
+            3: 'GastosComparativoExcel.ftl',
+            4: 'GastosDetalleExcel.ftl'
         }
 
         const Classes = {

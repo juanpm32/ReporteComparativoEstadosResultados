@@ -75,7 +75,7 @@
                 <tbody>
                     <#list context.centers as center>
                         <tr bm-parent="${center.id}">
-                            <td nowrap ><i class="minus square icon" onclick="groupLines(this)"
+                            <td nowrap><i class="minus square icon" onclick="groupLines(this)"
                                     bm-type="group"></i>${center.name}
                             </td>
                             <#list context.headers as header>
@@ -83,7 +83,7 @@
                                 <#assign last=center.period[header.last.id] />
                                 <#assign var=current - last />
                                 <#assign p_var=generateVariationPercent(current,last) />
-                                <td nowrap  class="right">
+                                <td nowrap class="right">
                                     <div class="title hide">
                                         <span class="bm-lbl" bm-period="${header.current.id}" bm-concept=""
                                             bm-center="${center.id}">
@@ -91,7 +91,7 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td nowrap  class="right">
+                                <td nowrap class="right">
                                     <div class="title hide">
                                         <span class="bm-lbl" bm-period="${header.last.id}" bm-concept=""
                                             bm-center="${center.id}">
@@ -99,123 +99,123 @@
                                         </span>
                                     </div>
                                 </td>
-                                <td nowrap  class="right">
+                                <td nowrap class="right">
                                     <div class="title hide">${var}</div>
                                 </td>
-                                <td nowrap  class="right">
+                                <td nowrap class="right">
                                     <div class="title hide">${p_var?string.percent}</div>
                                 </td>
                             </#list>
-                            <td nowrap  class="right">
+                            <td nowrap class="right">
                                 <div class="title hide">${center.current}</div>
                             </td>
-                            <td nowrap  class="right">
+                            <td nowrap class="right">
                                 <div class="title hide">${center.last}</div>
                             </td>
                             <#assign current=center.current />
                             <#assign last=center.last />
                             <#assign var=current - last />
                             <#assign p_var=generateVariationPercent(current,last) />
-                            <td nowrap  class="right">
+                            <td nowrap class="right">
                                 <div class="title hide">${var}</div>
                             </td>
-                            <td nowrap  class="right">
+                            <td nowrap class="right">
                                 <div class="title hide">${p_var?string.percent}</div>
                             </td>
                         </tr>
                         <#list center.concepts as concept>
                             <tr bm-child="${center.id}">
-                                <td nowrap  style="padding-left:15px">${concept.name}
+                                <td nowrap style="padding-left:15px">${concept.name}
                                 </td>
                                 <#list context.headers as header>
                                     <#assign current=concept.periods[header.current.id] />
                                     <#assign last=concept.periods[header.last.id] />
                                     <#assign var=current - last />
                                     <#assign p_var=generateVariationPercent(current,last) />
-                                    <td nowrap  class="right">
+                                    <td nowrap class="right">
                                         <span class="bm-lbl" bm-period="${header.current.id}"
                                             bm-concept="${concept.name}" bm-center="${center.id}">
                                             ${concept.periods[header.current.id]}
                                         </span>
                                     </td>
-                                    <td nowrap  class="right">
+                                    <td nowrap class="right">
                                         <span class="bm-lbl" bm-period="${header.last.id}" bm-concept="${concept.name}"
                                             bm-center="${center.id}">
                                             ${concept.periods[header.last.id]}
                                         </span>
                                     </td>
                                     <#if var < 0>
-                                        <td nowrap  class="negative right">${var}</td>
+                                        <td nowrap class="negative right">${var}</td>
                                         <#else>
-                                            <td nowrap  class="right">${var}</td>
+                                            <td nowrap class="right">${var}</td>
                                     </#if>
-                                    <td nowrap  class="right">${p_var?string.percent}</td>
+                                    <td nowrap class="right">${p_var?string.percent}</td>
                                 </#list>
                                 <#assign current=concept.current />
                                 <#assign last=concept.last />
                                 <#assign var=current - last />
                                 <#assign p_var=generateVariationPercent(current,last) />
-                                <td nowrap  class="right">${concept.current}</td>
-                                <td nowrap  class="right">${concept.last}</td>
+                                <td nowrap class="right">${concept.current}</td>
+                                <td nowrap class="right">${concept.last}</td>
                                 <#if var < 0>
-                                    <td nowrap  class="negative right">${var}</td>
+                                    <td nowrap class="negative right">${var}</td>
                                     <#else>
-                                        <td nowrap  class="right">${var}</td>
+                                        <td nowrap class="right">${var}</td>
                                 </#if>
-                                <td nowrap  class="right">${p_var?string.percent}</td>
+                                <td nowrap class="right">${p_var?string.percent}</td>
                             </tr>
                         </#list>
                         <tr bm-child="${center.id}" class="summary-total">
-                            <td nowrap ></i>Total</td>
+                            <td nowrap></i>Total</td>
                             <#list context.headers as header>
                                 <#assign current=center.period[header.current.id] />
                                 <#assign last=center.period[header.last.id] />
                                 <#assign var=current - last />
                                 <#assign p_var=1 />
                                 <#assign p_var=generateVariationPercent(current,last) />
-                                <td nowrap  class="right">
+                                <td nowrap class="right">
                                     <span class="bm-lbl" bm-period="${header.current.id}" bm-concept=""
                                         bm-center="${center.id}">
                                         ${current}
                                     </span>
                                 </td>
-                                <td nowrap  class="right">
+                                <td nowrap class="right">
                                     <span class="bm-lbl" bm-period="${header.last.id}" bm-concept=""
                                         bm-center="${center.id}">
                                         ${last}
                                     </span>
                                 </td>
-                                <td nowrap  class="right">${var}</td>
-                                <td nowrap  class="right">${p_var?string.percent}</td>
+                                <td nowrap class="right">${var}</td>
+                                <td nowrap class="right">${p_var?string.percent}</td>
                             </#list>
-                            <td nowrap  class="right">${center.current}</td>
-                            <td nowrap  class="right">${center.last}</td>
+                            <td nowrap class="right">${center.current}</td>
+                            <td nowrap class="right">${center.last}</td>
                             <#assign var=center.current - center.last />
                             <#assign p_var=generateVariationPercent(center.current,center.last) />
-                            <td nowrap  class="right">${var}</td>
-                            <td nowrap  class="right">${p_var?string.percent}</td>
+                            <td nowrap class="right">${var}</td>
+                            <td nowrap class="right">${p_var?string.percent}</td>
                         </tr>
                     </#list>
                     <tr class="summary-total">
-                        <td nowrap >Report Comparativo (Total)</td>
+                        <td nowrap>Reporte Comparativo (Total)</td>
                         <#list context.headers as header>
                             <#assign current=context.total[header.current.id] />
                             <#assign last=context.total[header.last.id] />
                             <#assign var=current - last />
                             <#assign p_var=generateVariationPercent(current,last) />
-                            <td nowrap  class="right">${current}</td>
-                            <td nowrap  class="right">${last}</td>
-                            <td nowrap  class="right">${var}</td>
-                            <td nowrap  class="right">${p_var?string.percent}</td>
+                            <td nowrap class="right">${current}</td>
+                            <td nowrap class="right">${last}</td>
+                            <td nowrap class="right">${var}</td>
+                            <td nowrap class="right">${p_var?string.percent}</td>
                         </#list>
-                        <td nowrap  class="right">${context.summary.current.amount}</td>
-                        <td nowrap  class="right">${context.summary.last.amount}</td>
+                        <td nowrap class="right">${context.summary.current.amount}</td>
+                        <td nowrap class="right">${context.summary.last.amount}</td>
                         <#assign current=context.summary.current.amount />
                         <#assign last=context.summary.last.amount />
                         <#assign var=current - last />
                         <#assign p_var=generateVariationPercent(current,last) />
-                        <td nowrap  class="right">${var}</td>
-                        <td nowrap  class="right">${p_var?string.percent}</td>
+                        <td nowrap class="right">${var}</td>
+                        <td nowrap class="right">${p_var?string.percent}</td>
                     </tr>
                 </tbody>
             </table>
@@ -291,14 +291,15 @@
                     scriptId: 'customscript_bm_comp_report_det_suitelet',
                     params: {
                         period: period,
-                        class: center,
-                        concept: concept,
+                        //class: center,
+                        //concept: concept,
                         subsidiary: subsidiary,
                         view: report
                     }
                 });
 
-                window.location.href = bmPathDetailsURI;
+                //window.location.href = bmPathDetailsURI;
+                window.open(bmPathDetailsURI, "_blank");
 
             })
 
