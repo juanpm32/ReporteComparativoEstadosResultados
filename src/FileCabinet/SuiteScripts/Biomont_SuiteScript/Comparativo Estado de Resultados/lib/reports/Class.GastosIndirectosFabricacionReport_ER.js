@@ -43,7 +43,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             var mySearchObj = mySearch.run();
             var searchResults = mySearchObj.getRange({
                 start: 0,
-                end: 1000 // Ajusta esto según tus necesidades para evitar límites de resultados
+                end: 2 // Ajusta esto según tus necesidades para evitar límites de resultados
             });
         
             // Obtener la cantidad de registros devueltos
@@ -66,7 +66,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             }
 
             // Agregar filtro de período
-            filterExpression.push(["period", "anyof", period]);
+            filterExpression.push("AND",["accountingperiod.internalid", "anyof", period]);
 
             // Crear la búsqueda con los filtros convertidos
             var mySearch = search.create({
@@ -78,7 +78,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             var mySearchObj = mySearch.run();
             var searchResults = mySearchObj.getRange({
                 start: 0,
-                end: 1000 // Ajusta esto según tus necesidades para evitar límites de resultados
+                end: 2 // Ajusta esto según tus necesidades para evitar límites de resultados
             });
 
             // Obtener la cantidad de registros devueltos
@@ -1475,20 +1475,10 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             transactionQuery13.execute(node => {
 
-                //let classId = node.getValue('classId');
-                //let className = node.getValue('className');
-                //let concept = node.getValue('concept');
 
                 let periodId = node.getValue('period');
                 let periodName = node.getText('period')
                 let amount = node.getValue('amount');
-                //periodId = quarterYearMap[periodId];
-
-                //if (!periodId) {
-                //    periodId = '171';
-                //}
-
-                //let amount = node.getValue('amount');
 
                 if (periodId) {
                     resultTransaction.push({
@@ -1855,9 +1845,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             transactionQuery31.updateFilters([
                 ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
-                "AND",
-                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
                 //"AND",
+                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
+                "AND",
                 ["accountingperiod.internalid", "anyof"].concat(periods),
                 "AND",
                 ["accountingperiod.isadjust", "is", "F"],
@@ -1891,43 +1881,31 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
+            //log.debug("periods",periods);
+            //log.debug("filters",transactionQuery31.context.filters.filter((element, index) => index !== 1 && index !== 2));
+            let filters31 = transactionQuery31.context.filters.filter((element, index) => index !== 1 && index !== 2);
 
             periods.forEach(peri => {
-                log.debug("count",countRecordsWithFiltersForPeriod(transactionQuery31.context.filters.filter(el => el.name !== 'internalid'),peri))
-                /*if(countRecordsWithFiltersForPeriod(transactionQuery31.context.filters.filter(el => el.name !== 'internalid'),peri)==0){
 
-                    periods.forEach(period => {
-                        resultTransaction.push({
-                            class: { id: 3, name: 'GASTO ADMINISTRATIVO OPERACIONAL' },
-                            concept: className,
-                            period: period,
-                            amount: Number(amount)
-                        })
-    
-                    })
-            
-                }else{
-    
+                if(countRecordsWithFiltersForPeriod(filters31,peri)>0){
+
                     transactionQuery31.execute(node => {
-    
-                        let className = node.getValue('className');
-                        let concept = node.getValue('concept');
-                        let periodId = node.getValue('period');
-                        let amount = node.getValue('amount');
-            
-                        if (periodId) {
-                            resultTransaction.push({
-                                class: { id: 3, name: 'GASTO ADMINISTRATIVO OPERACIONAL' },
-                                concept: className,
-                                period: periodId,
-                                amount: Number(amount)
-                            })
-                        }
-        
+                         let className = node.getValue('className');
+                         let periodId = node.getValue('period');
+                         let amount = node.getValue('amount');
+
+                         resultTransaction.push({
+                             class: { id: 3, name: 'GASTO ADMINISTRATIVO OPERACIONAL' },
+                             concept: className,
+                             period: periodId,
+                             amount: amount
+                         })
+
                     });
-                    
-                }*/
+                }
+
             })
+
 
             /*//Siguiente seccion agregada GASTO ADMINISTRATIVO OFICINA
             let transactionQuery41 = new Basic.CustomSearch('transaction');
@@ -1970,25 +1948,32 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            transactionQuery41.execute(node => {
+            let filters41 = transactionQuery41.context.filters.filter((element, index) => index !== 1 && index !== 2);
 
-                let className = node.getValue('className');
-                let concept = node.getValue('concept');
-                let periodId = node.getValue('period');
-                let amount = node.getValue('amount');
+            periods.forEach(peri => {
 
-                if (periodId) {
-                    resultTransaction.push({
-                        class: { id: 4, name: 'GASTO ADMINISTRATIVO OFICINA' },
-                        concept: className,
-                        period: periodId,
-                        amount: Number(amount)
-                    })
+                if(countRecordsWithFiltersForPeriod(filters41,peri)>0){
+                    transactionQuery41.execute(node => {
+
+                        let className = node.getValue('className');
+                        let periodId = node.getValue('period');
+                        let amount = node.getValue('amount');
+        
+                        if (periodId) {
+                            resultTransaction.push({
+                                class: { id: 4, name: 'GASTO ADMINISTRATIVO OFICINA' },
+                                concept: className,
+                                period: periodId,
+                                amount: Number(amount)
+                            })
+                        }
+        
+                    });
                 }
+            })*/
+            
 
-            });
-
-            // Crear un objeto para mantener un seguimiento de las sumas acumuladas
+            /*// Crear un objeto para mantener un seguimiento de las sumas acumuladas
             const accum_gasto_administrativo = {};
 
             // Iterar sobre los elementos de datos
@@ -2545,6 +2530,8 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             });*/
 
              //resultTransaction.sort((a, b) => a.class.id - b.class.id);
+
+            log.debug("resultTransaction",resultTransaction);
 
             resultTransaction.sort(function (a, b) {
                 if (a.class.id !== b.class.id) {
