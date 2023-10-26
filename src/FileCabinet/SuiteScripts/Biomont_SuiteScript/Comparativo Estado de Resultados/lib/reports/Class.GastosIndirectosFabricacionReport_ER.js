@@ -66,7 +66,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             }
 
             // Agregar filtro de período
-            filterExpression.push("AND",["accountingperiod.internalid", "anyof", period]);
+            //filterExpression.push("AND",["accountingperiod.internalid", "anyof", period]);
 
             // Crear la búsqueda con los filtros convertidos
             var mySearch = search.create({
@@ -1871,9 +1871,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery31.pushColumn(
                 { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
             );
-            transactionQuery31.pushColumn(
-                { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
-            );
+            //transactionQuery31.pushColumn(
+            //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            //);
             transactionQuery31.pushColumn(
                 { name: 'postingperiod', summary: 'GROUP', label: 'period' }
             );
@@ -1881,33 +1881,25 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            //log.debug("periods",periods);
-            //log.debug("filters",transactionQuery31.context.filters.filter((element, index) => index !== 1 && index !== 2));
-            let filters31 = transactionQuery31.context.filters.filter((element, index) => index !== 1 && index !== 2);
 
-            periods.forEach(peri => {
+            transactionQuery31.execute(node => {
+                let className = node.getValue('className');
+                let periodId = node.getValue('period');
+                let amount = node.getValue('amount');
 
-                if(countRecordsWithFiltersForPeriod(filters31,peri)>0){
-
-                    transactionQuery31.execute(node => {
-                         let className = node.getValue('className');
-                         let periodId = node.getValue('period');
-                         let amount = node.getValue('amount');
-
-                         resultTransaction.push({
-                             class: { id: 3, name: 'GASTO ADMINISTRATIVO OPERACIONAL' },
-                             concept: className,
-                             period: periodId,
-                             amount: amount
-                         })
-
-                    });
+                if(periodId){
+                    resultTransaction.push({
+                        class: { id: 3, name: 'GASTO ADMINISTRATIVO OPERACIONAL' },
+                        concept: className,
+                        period: periodId,
+                        amount: amount
+                    })
                 }
+                
+            });
 
-            })
 
-
-            /*//Siguiente seccion agregada GASTO ADMINISTRATIVO OFICINA
+            //Siguiente seccion agregada GASTO ADMINISTRATIVO OFICINA
             let transactionQuery41 = new Basic.CustomSearch('transaction');
 
             transactionQuery41.updateFilters([
@@ -1938,9 +1930,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery41.pushColumn(
                 { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
             );
-            transactionQuery41.pushColumn(
-                { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
-            );
+            //transactionQuery41.pushColumn(
+            //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            //);
             transactionQuery41.pushColumn(
                 { name: 'postingperiod', summary: 'GROUP', label: 'period' }
             );
@@ -1948,37 +1940,33 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            let filters41 = transactionQuery41.context.filters.filter((element, index) => index !== 1 && index !== 2);
 
-            periods.forEach(peri => {
+            transactionQuery41.execute(node => {
 
-                if(countRecordsWithFiltersForPeriod(filters41,peri)>0){
-                    transactionQuery41.execute(node => {
-
-                        let className = node.getValue('className');
-                        let periodId = node.getValue('period');
-                        let amount = node.getValue('amount');
+                let className = node.getValue('className');
+                let periodId = node.getValue('period');
+                let amount = node.getValue('amount');
         
-                        if (periodId) {
-                            resultTransaction.push({
-                                class: { id: 4, name: 'GASTO ADMINISTRATIVO OFICINA' },
-                                concept: className,
-                                period: periodId,
-                                amount: Number(amount)
-                            })
-                        }
-        
-                    });
+                if (periodId) {
+                    resultTransaction.push({
+                        class: { id: 4, name: 'GASTO ADMINISTRATIVO OFICINA' },
+                        concept: className,
+                        period: periodId,
+                        amount: Number(amount)
+                    })
                 }
-            })*/
-            
+        
+            });
 
-            /*// Crear un objeto para mantener un seguimiento de las sumas acumuladas
+            log.debug("periods",periods)
+
+            // Crear un objeto para mantener un seguimiento de las sumas acumuladas
             const accum_gasto_administrativo = {};
 
             // Iterar sobre los elementos de datos
-            resultTransaction.forEach((item) => {
-                const classId = item.class.id;
+            resultTransaction.forEach(item => {
+                log.debug("item",item)
+                /*const classId = item.class.id;
                 const period = item.period;
                 const amount = item.amount;
 
@@ -1991,10 +1979,10 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
                 // Acumular el monto
-                accum_gasto_administrativo[classId][period] += amount;
+                accum_gasto_administrativo[classId][period] += amount;*/
             });
 
-            const result51 = [];
+            /*const result51 = [];
 
             for (const period in accum_gasto_administrativo[3]) {
                 const class4Amount = accum_gasto_administrativo[3][period];
@@ -2019,9 +2007,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                     amount: Number(node.amount)
                 })
 
-            });
+            });*/
 
-            //Siguiente seccion agregada GASTO DE VENTA
+            /*//Siguiente seccion agregada GASTO DE VENTA
             let transactionQuery61 = new Basic.CustomSearch('transaction');
 
             transactionQuery61.updateFilters([
@@ -2527,11 +2515,11 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                     amount: Number(node.amount)
                 })
 
-            });*/
+            });
 
              //resultTransaction.sort((a, b) => a.class.id - b.class.id);
 
-            log.debug("resultTransaction",resultTransaction);
+            //log.debug("resultTransaction",resultTransaction);
 
             resultTransaction.sort(function (a, b) {
                 if (a.class.id !== b.class.id) {
@@ -3913,7 +3901,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                      amount: Number(node.amount)
                  })
  
-             });
+             });*/
  
              //resultTransaction.sort((a, b) => a.class.id - b.class.id);
  

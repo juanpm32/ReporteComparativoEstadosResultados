@@ -3,7 +3,7 @@
  * @NScriptType Suitelet
  */
 define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER'],
-
+    
     function (ServerWidget, ReportManager, Basic) {
         /** despliegue: customdeploy_rep_comparativo_er */
         /**
@@ -13,6 +13,7 @@ define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib
          * @param {ServerResponse} scriptContext.response - Suitelet response
          * @since 2015.2
          */
+
         function onRequest(scriptContext) {
 
             try {
