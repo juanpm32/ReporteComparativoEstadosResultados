@@ -2,10 +2,13 @@
  * @NApiVersion 2.1
  * @NScriptType Suitelet
  */
-define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER'],
+define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER','N'],
     
-    function (ServerWidget, ReportManager, Basic) {
+    function (ServerWidget, ReportManager, Basic, N) {
         /** despliegue: customdeploy_rep_comparativo_er */
+
+        const { file, encode } = N;
+
         /**
          * Defines the Suitelet script trigger point.
          * @param {Object} scriptContext
@@ -59,14 +62,35 @@ define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib
                         }
                     }
 
+                    if (params.xls == 'T') {
 
-                    ServerWidget.createViewerModel(selectedReportHtml);
+                        let base64fileEncodedString = encode.convert({
+                            string: selectedReportHtml,
+                            inputEncoding: encode.Encoding.UTF_8,
+                            outputEncoding: encode.Encoding.BASE_64
+                        });
 
-                    let reportForm = ServerWidget.getForm();
+                        scriptContext.response.writeFile(
+                            file.create({
+                                name: 'Reporte Comparativo.xls',
+                                fileType: file.Type.EXCEL,
+                                encoding: file.Encoding.UTF_8,
+                                contents: base64fileEncodedString
+                            })
+                        )
 
-                    reportForm.clientScriptModulePath = './Client.ViewerComparativeReportManager_ER'
+                    } else {
 
-                    scriptContext.response.writePage(reportForm);
+
+                        ServerWidget.createViewerModel(selectedReportHtml);
+
+                        let reportForm = ServerWidget.getForm();
+
+                        reportForm.clientScriptModulePath = './Client.ViewerComparativeReportManager_ER'
+
+                        scriptContext.response.writePage(reportForm);
+
+                    }
                 } else {
 
                     ServerWidget.loadReportForm(scriptContext.request.parameters);
