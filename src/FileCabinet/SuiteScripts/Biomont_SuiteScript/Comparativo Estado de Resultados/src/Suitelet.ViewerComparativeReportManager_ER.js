@@ -38,25 +38,25 @@ define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib
 
                         case Basic.Data.Report.GASTOS_INDIRECTOS: {
                             log.debug('Start Report', '-- Gastos Indirectos Report --');
-                            selectedReportHtml = new ReportManager.GastosIndirectosFabricacionReport(params).print();
+                            selectedReportHtml = new ReportManager.GastosComparativosGroup(params).print();
                             log.debug('End Report', '-- Gastos Indirectos Report --');
                             break;
                         }
                         case Basic.Data.Report.GASTOS_ADM_OP: {
                             log.debug('Start Report', '-- Gastos Administrativos Operacion Report --');
-                            selectedReportHtml = new ReportManager.GastosAdministrativosOperacion(params).print();
+                            selectedReportHtml = new ReportManager.GastosComparativosGroup(params).print();
                             log.debug('End Report', '-- Gastos Administrativos Operacion Report --');
                             break;
                         }
                         case Basic.Data.Report.GASTOS_ADM_OF: {
                             log.debug('Start Report', '-- Gastos Administrativos Oficina Report --');
-                            selectedReportHtml = new ReportManager.GastosAdministrativosOficina(params).print();
+                            selectedReportHtml = new ReportManager.GastosComparativosGroup(params).print();
                             log.debug('End Report', '-- Gastos Administrativos Oficina Report --');
                             break;
                         }
                         case Basic.Data.Report.GASTOS_VENTAS: {
                             log.debug('Start Report', '-- Gastos Ventas Report --');
-                            selectedReportHtml = new ReportManager.GastosVentas(params).print();
+                            selectedReportHtml = new ReportManager.GastosComparativosGroup(params).print();
                             log.debug('End Report', '-- Gastos Ventas Report --');
                             break;
                         }

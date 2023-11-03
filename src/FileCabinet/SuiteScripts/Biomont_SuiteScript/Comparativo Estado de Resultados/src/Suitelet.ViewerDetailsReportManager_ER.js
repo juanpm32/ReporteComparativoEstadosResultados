@@ -2,9 +2,11 @@
  * @NApiVersion 2.1
  * @NScriptType Suitelet
  */
-define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER'],
+define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER', 'N'],
 
-    function (ServerWidget, ReportManager, Basic) {
+    function (ServerWidget, ReportManager, Basic, N) {
+
+        const { file, encode } = N;
   
         /**
          * Defines the Suitelet script trigger point.

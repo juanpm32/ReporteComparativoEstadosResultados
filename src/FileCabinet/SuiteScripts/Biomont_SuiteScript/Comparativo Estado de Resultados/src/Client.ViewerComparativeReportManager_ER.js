@@ -23,7 +23,7 @@ define(['N', '../lib/Lib.Operations_ER'],
                 let yearValue = scriptContext.currentRecord.getValue(FIELDS.year);
                 let monthField = scriptContext.currentRecord.getField(FIELDS.month);
 
-                if (viewValue == 'D') {
+                if (viewValue == 'D' || viewValue == 'A') {
                     monthField.isDisabled = false;
                     monthField.removeSelectOption({ value: null })
                     Operations.createAccountingPeriodByYear(yearValue).forEach(node => {
