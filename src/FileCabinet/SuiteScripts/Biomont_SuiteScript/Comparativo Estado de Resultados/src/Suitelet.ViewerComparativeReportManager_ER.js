@@ -44,7 +44,7 @@ define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib
                         }
                         case Basic.Data.Report.GASTOS_ADM_OP: {
                             log.debug('Start Report', '-- Gastos Administrativos Operacion Report --');
-                            selectedReportHtml = new ReportManager.GastosComparativosGroup(params).print();
+                            selectedReportHtml = new ReportManager.GastosComparativosGroup1(params).print();
                             log.debug('End Report', '-- Gastos Administrativos Operacion Report --');
                             break;
                         }
