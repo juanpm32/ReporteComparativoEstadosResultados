@@ -5,15 +5,29 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
     function (N, ReportRenderer, Basic, Operations) {
 
+        const REPORTS = {
+            1: 'GASTOS_INDIRECTOS',
+            2: 'GASTOS_ADM_OP',
+            3: 'GASTOS_ADM_OF',
+            4: 'GASTOS_VENTAS'
+        }
+
         const { search, log } = N;
 
-        //var classes = Basic.Classes.GASTOS_INDIRECTOS;
+        var classes = null;
+        var selectReport = null;
+
+        var hasDecimal = 'T';
+
+        function sumAmount(base, amount) {
+            return Math.round((Number(base) + Number(amount)) * 100) / 100;
+        }
 
         //function createAccountNumberFilter() {
         //    let filter = ['AND'];
-        //    filter.push(['account.number', 'startswith', Basic.Account.True.GASTOS_INDIRECTOS]);
+        //    filter.push(['account.number', 'startswith', Basic.Account.True[selectReport]]);
 
-        //    Basic.Account.False.GASTOS_INDIRECTOS.forEach(number => {
+        //    Basic.Account.False[selectReport].forEach(number => {
         //        filter.push('AND');
         //        filter.push(['account.number', 'doesnotstartwith', number]);
         //    });
@@ -202,7 +216,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ],
                 "AND",
                 //['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
-                ['customer.custentity_customer_report_p_and_l', 'is', 'EXPORTACION']
+                ['customer.custentity_customer_report_p_and_l', 'isnot', 'EXPORTACION']
             ]);
 
             transactionQuery13.pushColumn(
@@ -425,7 +439,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ],
                 "AND",
                 //['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
-                ['customer.custentity_customer_report_p_and_l', 'is', 'EXPORTACION']
+                ['customer.custentity_customer_report_p_and_l', 'isnot', 'EXPORTACION']
             ]);
 
             transactionQuery23.pushColumn(
@@ -435,7 +449,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            
+
             if (countRecordsWithFilters(transactionQuery23.context.filters) === 0) {
                 periods.forEach(period => {
                     resultTransaction.push({
@@ -1367,19 +1381,18 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 return a.concept.localeCompare(b.concept);
             });
 
-            log.debug("resultTransaction", resultTransaction);
-
             return resultTransaction;
         }
 
         function createTransactionDetailsByPeriod(periods, subsidiary) {
+
+            log.debug('Periods', periods);
 
             let resultTransaction = [];
 
             let transactionQuery11 = new Basic.CustomSearch('transaction');
 
             transactionQuery11.updateFilters([
-
                 ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.internalid", "anyof"].concat(periods),
@@ -1387,14 +1400,16 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ["accountingperiod.isadjust", "is", "F"],
                 'AND',
                 ['subsidiary', 'anyof', subsidiary],
-                "AND",
-                //['class', 'anyof'].concat(classes)
-                //'AND',
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
-                //["type", "noneof", "PurchReq"]
-                ['account.number', 'startswith', 701]
-                //].concat(createAccountNumberFilter())
+                'AND',
+                ['custbody114', 'noneof', '25', '24', '13', '22', '11', '10', '28', '3', '8'],
+                'AND',
+                ['custcol_ns_afec_igv', 'noneof', '16'],
+                'AND',
+                ['item.custitem3', 'anyof', '1', '3', '2', '37', '9', '11', '10'],
+                'AND',
+                ['custbody_ns_document_type', 'anyof', '4', '2', '9', '8'],
+                'AND',
+                ['account', 'noneof', '6479', '6473', '6469', '6470', '6471', '6472', '6633', '6478']
             ]);
 
             //transactionQuery.pushColumn(
@@ -1407,13 +1422,16 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
             //);
             transactionQuery11.pushColumn(
+                { name: 'custitem3', join: 'item', summary: 'GROUP', label: 'line' }
+            );
+            transactionQuery11.pushColumn(
                 { name: 'postingperiod', summary: 'GROUP', label: 'period' }
             );
             transactionQuery11.pushColumn(
-                { name: 'amount', summary: 'SUM', label: 'amount' }
+                { name: 'netamount', summary: 'SUM', label: 'amount' }
             );
 
-            if (countRecordsWithFilters(transactionQuery11.context.filters) === 0) {
+            /*if (countRecordsWithFilters(transactionQuery11.context.filters) === 0) {
                 periods.forEach(period => {
                     resultTransaction.push({
                         class: { id: 0, name: 'VENTA NACIONAL' },
@@ -1422,25 +1440,26 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         amount: 0
                     })
                 })
-            } else {
+            } else {*/
 
-                transactionQuery11.execute(node => {
+            transactionQuery11.execute(node => {
 
-                    let periodId = node.getValue('period');
-                    let amount = node.getValue('amount');
+                let line = node.getText('line');
+                let periodId = node.getValue('period');
+                let amount = node.getValue('amount');
 
-                    if (periodId) {
-                        resultTransaction.push({
-                            class: { id: 0, name: 'VENTA NACIONAL' },
-                            concept: 'Mercaderias',
-                            period: periodId,
-                            amount: Number(amount)
-                        })
-                    }
-                });
-            }
+                if (periodId) {
+                    resultTransaction.push({
+                        class: { id: 0, name: 'VENTA NETA' },
+                        concept: line,
+                        period: periodId,
+                        amount: Number(amount)
+                    })
+                }
+            });
+            /*}*/
 
-            //Siguiente seccion agregada CONCEPTO Materias Primas
+            /*//Siguiente seccion agregada CONCEPTO Materias Primas
             let transactionQuery12 = new Basic.CustomSearch('transaction');
 
             transactionQuery12.updateFilters([
@@ -1550,7 +1569,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ],
                 "AND",
                 //['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
-                ['customer.custentity_customer_report_p_and_l', 'is', 'NACIONAL']
+                ['customer.custentity_customer_report_p_and_l', 'isnot', 'EXPORTACION']
             ]);
 
             transactionQuery13.pushColumn(
@@ -1789,7 +1808,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ],
                 "AND",
                 //['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
-                ['customer.custentity_customer_report_p_and_l', 'is', 'NACIONAL']
+                ['customer.custentity_customer_report_p_and_l', 'isnot', 'EXPORTACION']
             ]);
 
             transactionQuery23.pushColumn(
@@ -1981,8 +2000,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             transactionQuery31.updateFilters([
                 ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
-                //"AND",
-                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
                 "AND",
                 ["accountingperiod.internalid", "anyof"].concat(periods),
                 "AND",
@@ -1992,26 +2009,39 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['class', 'anyof'].concat([33, 1, 2, 3, 4, 5, 6, 7]),
                 "AND",
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
                 ["type", "noneof", "PurchReq"],
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]],
+                "AND",
+                ["memorized", "is", "F"]
             ]);
+
+            //transactionQuery31.pushColumn(
+            //    { name: 'class', summary: 'GROUP', label: 'classId' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'postingperiod', summary: 'GROUP', label: 'period' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'amount', summary: 'SUM', label: 'amount' }
+            //;
 
             transactionQuery31.pushColumn(
                 { name: 'class', summary: 'GROUP', label: 'classId' }
             );
             transactionQuery31.pushColumn(
-                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+                { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
             );
-            //transactionQuery31.pushColumn(
-            //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
-            //);
             transactionQuery31.pushColumn(
-                { name: 'postingperiod', summary: 'GROUP', label: 'period' }
+                { name: 'internalid', join: 'accountingperiod', summary: 'GROUP', label: 'period' }
             );
             transactionQuery31.pushColumn(
                 { name: 'amount', summary: 'SUM', label: 'amount' }
@@ -2019,9 +2049,17 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
 
             transactionQuery31.execute(node => {
-                let className = node.getValue('className');
+                //let className = node.getValue('className');
+                //let periodId = node.getValue('period');
+                //let amount = node.getValue('amount');
+
+                let classId = node.getValue('classId');
+                let className = node.getText('classId').split(':');
+                className = className[className.length - 1];
+                let concept = node.getValue('concept');
                 let periodId = node.getValue('period');
-                let amount = node.getValue('amount');
+                let amount = Number(node.getValue('amount'));
+
 
                 if (periodId) {
                     resultTransaction.push({
@@ -2041,8 +2079,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery41.updateFilters([
                 ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 "AND",
-                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
-                //"AND",
                 ["accountingperiod.internalid", "anyof"].concat(periods),
                 "AND",
                 ["accountingperiod.isadjust", "is", "F"],
@@ -2051,13 +2087,13 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['class', 'anyof'].concat([14, 15, 16, 17, 18, 19, 20]),
                 "AND",
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
                 ["type", "noneof", "PurchReq"],
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]],
+                "AND",
+                ["memorized", "is", "F"]
             ]);
 
             transactionQuery41.pushColumn(
@@ -2695,9 +2731,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             });
 
-            //resultTransaction.sort((a, b) => a.class.id - b.class.id);
+            //resultTransaction.sort((a, b) => a.class.id - b.class.id);*/
 
-            //log.debug("resultTransaction",resultTransaction);
+            log.debug("resultTransaction", resultTransaction);
 
             resultTransaction.sort(function (a, b) {
                 if (a.class.id !== b.class.id) {
@@ -2706,11 +2742,13 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 return a.concept.localeCompare(b.concept);
             });
 
+
+            //log.debug('Length', resultTransaction.length);
+
             return resultTransaction;
         }
 
         function createTransactionDetailsByQuarter(quarters, subsidiary) {
-
             let resultTransaction = [];
 
             let transactionQuery11 = new Basic.CustomSearch('transaction');
@@ -2740,7 +2778,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let periodId = node.getValue('period');
                 let periodName = node.getText('period');
                 let amount = node.getValue('amount');
-            
+
                 resultTransaction.push({
                     class: { id: 0, name: 'VENTA NACIONAL' },
                     concept: 'Mercaderias',
@@ -2781,81 +2819,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             const arrayPeriodos = ['180', '295', '293', '184', '294'];
 
-            /*arrayPeriodos.forEach(period => {
-                const existingPeriod = resultTransaction.find(item => item.period === period);
-                if (!existingPeriod) {
-                    resultTransaction.push({
-                        class: { id: 0, name: 'VENTA NACIONAL' },
-                        concept: 'Mercaderias',
-                        period: period,
-                        amount: 0
-                    });
-                }
-            });*/
-
-
-            //addPeriod(0,'VENTA NACIONAL','Mercaderias',resultTransaction);
-
-
-
-            //Siguiente seccion agregada CONCEPTO Materias Primas
-            //let transactionQuery12 = new Basic.CustomSearch('transaction');
-
-            //transactionQuery12.updateFilters([
-            //    ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
-            //    "AND",
-            //    ["accountingperiod.parent", "anyof"].concat(quarters),
-            //    "AND",
-            //    ["accountingperiod.isadjust", "is", "F"],
-            //    'AND',
-            //    ['subsidiary', 'anyof', subsidiary],
-            //    "AND",
-            //    ['account.number', 'startswith', 702],
-            //    "AND",
-            //    ["item.itemid", "contains", "MP00000043"]
-            //]);
-
-            //transactionQuery12.pushColumn(
-            //    { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
-            //);
-            //transactionQuery12.pushColumn(
-            //    { name: 'amount', summary: 'SUM', label: 'amount' }
-            //);
-
-
-            /*arrayPeriodos.forEach(elemento => {
-                resultTransaction.push({
-                    class: { id: 0, name: 'VENTA NACIONAL' },
-                    concept: 'Materias Primas',
-                    period: elemento,
-                    amount: 0
-                })
-                resultTransaction.push({
-                    class: { id: 0, name: 'VENTA NACIONAL' },
-                    concept: 'Desvalorizacion Existencias',
-                    period: elemento,
-                    amount: 0
-                })
-                resultTransaction.push({
-                    class: { id: 13, name: 'PARTICIONES TRABAJADORES' },
-                    concept: 'PARTICIONES TRABAJADORES',
-                    period: elemento,
-                    amount: 0
-                })
-                resultTransaction.push({
-                    class: { id: 14, name: 'IMPUESTO A LA RENTA' },
-                    concept: 'IMPUESTO A LA RENTA',
-                    period: elemento,
-                    amount: 0
-                })
-                resultTransaction.push({
-                    class: { id: 16, name: 'RESERVA LEGAL' },
-                    concept: 'RESERVA LEGAL',
-                    period: elemento,
-                    amount: 0
-                })
-            });*/
-
             //Siguiente seccion agregada CONCEPTO PT Nacional
             let transactionQuery13 = new Basic.CustomSearch('transaction');
 
@@ -2882,7 +2845,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ],
                 "AND",
                 //['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
-                ['customer.custentity_customer_report_p_and_l', 'is', 'NACIONAL']
+                ['customer.custentity_customer_report_p_and_l', 'isnot', 'EXPORTACION']
             ]);
 
             transactionQuery13.pushColumn(
@@ -2963,7 +2926,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada COSTO DE VENTA
             //Siguiente seccion agregada CONCEPTO Mercaderias
@@ -3012,7 +2975,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Materias Primas
             let transactionQuery22 = new Basic.CustomSearch('transaction');
@@ -3060,7 +3023,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Venta Nacional
             let transactionQuery23 = new Basic.CustomSearch('transaction');
@@ -3088,7 +3051,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ],
                 "AND",
                 //['customer.internalid', 'noneof', [475, 22055, 22056, 22057, 22058, 22059, 22061, 22063, 22067, 22068, 22069, 22070, 22071, 22073, 22074, 22075, 22077, 22079, 23438, 23790, 23825, 24079, 28080]]
-                ['customer.custentity_customer_report_p_and_l', 'is', 'NACIONAL']
+                ['customer.custentity_customer_report_p_and_l', 'isnot', 'EXPORTACION']
             ]);
 
             transactionQuery23.pushColumn(
@@ -3114,7 +3077,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-     
+
 
             //Siguiente seccion agregada CONCEPTO Exportación
             let transactionQuery24 = new Basic.CustomSearch('transaction');
@@ -3168,7 +3131,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Desvalorizacion Existencias
             let transactionQuery25 = new Basic.CustomSearch('transaction');
@@ -3216,7 +3179,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             // Paso 1: Obtener todos los period sin duplicados
             const periods = [...new Set(resultTransaction.map(item => item.period))];
@@ -3271,8 +3234,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery31.updateFilters([
                 ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 "AND",
-                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
-                //"AND",
                 ["accountingperiod.parent", "anyof"].concat(quarters),
                 "AND",
                 ["accountingperiod.isadjust", "is", "F"],
@@ -3281,13 +3242,13 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['class', 'anyof'].concat([33, 1, 2, 3, 4, 5, 6, 7]),
                 "AND",
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
                 ["type", "noneof", "PurchReq"],
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]],
+                "AND",
+                ["memorized", "is", "F"]
             ]);
 
             transactionQuery31.pushColumn(
@@ -3334,8 +3295,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery41.updateFilters([
                 ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 "AND",
-                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
-                //"AND",
                 ["accountingperiod.parent", "anyof"].concat(quarters),
                 "AND",
                 ["accountingperiod.isadjust", "is", "F"],
@@ -3344,13 +3303,13 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['class', 'anyof'].concat([14, 15, 16, 17, 18, 19, 20]),
                 "AND",
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
                 ["type", "noneof", "PurchReq"],
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]],
+                "AND",
+                ["memorized", "is", "F"]
             ]);
 
             transactionQuery41.pushColumn(
@@ -3622,7 +3581,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada INGRESOS FINANCIEROS
             let transactionQuery91 = new Basic.CustomSearch('transaction');
@@ -3675,7 +3634,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
 
             //Siguiente seccion agregada INGRESOS FINANCIEROS
@@ -3733,7 +3692,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada INGRESOS DIVERSOS
             let transactionQuery101 = new Basic.CustomSearch('transaction');
@@ -3774,7 +3733,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let periodId = node.getValue('period');
                 let periodName = node.getText('period')
                 let amount = node.getValue('amount');
-    
+
                 if (periodId) {
                     resultTransaction.push({
                         class: { id: 10, name: 'INGRESOS DIVERSOS' },
@@ -3785,7 +3744,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada DIFERENCIA DE CAMBIO
             let transactionQuery111 = new Basic.CustomSearch('transaction');
@@ -3837,7 +3796,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             // Crear un objeto para mantener un seguimiento de las acumulaciones por class.id
             const accum_utilidad_antes_particion = {};
@@ -3998,8 +3957,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 return a.concept.localeCompare(b.concept);
             });
 
-            log.debug("resultTransaction", resultTransaction);
-
             return resultTransaction;
         }
 
@@ -4024,7 +3981,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 return true;
             });
 
-            //log.debug('quarterYearMap', quarterYearMap);
 
             let resultTransaction = [];
 
@@ -4048,7 +4004,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
                 //"AND",
                 //["type", "noneof", "PurchReq"]
-                ['account.number', 'startswith', 701]
+                ['account.number', 'startswith', 702]
             ]);
 
             // transactionQuery.pushColumn(
@@ -4061,6 +4017,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             //     { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
             // );
             transactionQuery11.pushColumn(
+                { name: 'custitem3', join: "item", summary: 'GROUP', label: 'line' }
+            );
+            transactionQuery11.pushColumn(
                 { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
             );
             transactionQuery11.pushColumn(
@@ -4069,10 +4028,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             transactionQuery11.execute(node => {
 
-                //let classId = node.getValue('classId');
-                //let className = node.getValue('className');
-                //let concept = node.getValue('concept');
-
+                let line = node.getText('line');
                 let periodId = node.getValue('period');
                 periodId = quarterYearMap[periodId];
 
@@ -4080,8 +4036,8 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                 if (periodId) {
                     resultTransaction.push({
-                        class: { id: 0, name: 'VENTA NACIONAL' },
-                        concept: 'Mercaderias',
+                        class: { id: 0, name: 'VENTA NETAS' },
+                        concept: line,
                         period: periodId,
                         amount: Number(amount)
                     })
@@ -4089,7 +4045,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             });
 
-            //Siguiente seccion agregada CONCEPTO Materias Primas
+            /*//Siguiente seccion agregada CONCEPTO Materias Primas
             let transactionQuery12 = new Basic.CustomSearch('transaction');
 
             transactionQuery12.updateFilters([
@@ -4552,18 +4508,10 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             transactionQuery25.execute(node => {
 
-                //let classId = node.getValue('classId');
-                //let className = node.getValue('className');
-                //let concept = node.getValue('concept');
-
                 let periodId = node.getValue('period');
                 periodId = quarterYearMap[periodId];
 
                 let amount = node.getValue('amount');
-
-                //if (!periodId) {
-                //    periodId = '171';
-                //}
 
                 if (periodId) {
                     resultTransaction.push({
@@ -4623,8 +4571,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery31.updateFilters([
                 ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 "AND",
-                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
-                //"AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
                 ["accountingperiod.isadjust", "is", "F"],
@@ -4633,26 +4579,39 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['class', 'anyof'].concat([33, 1, 2, 3, 4, 5, 6, 7]),
                 "AND",
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
                 ["type", "noneof", "PurchReq"],
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]],
+                "AND",
+                ["memorized", "is", "F"]
             ]);
+
+            //transactionQuery31.pushColumn(
+            //    { name: 'class', summary: 'GROUP', label: 'classId' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            //);
+            //transactionQuery31.pushColumn(
+            //    { name: 'amount', summary: 'SUM', label: 'amount' }
+            //);
 
             transactionQuery31.pushColumn(
                 { name: 'class', summary: 'GROUP', label: 'classId' }
             );
             transactionQuery31.pushColumn(
-                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
-            );
-            transactionQuery31.pushColumn(
                 { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
             );
             transactionQuery31.pushColumn(
-                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+                { name: 'internalid', join: 'accountingperiod', summary: 'GROUP', label: 'period' }
             );
             transactionQuery31.pushColumn(
                 { name: 'amount', summary: 'SUM', label: 'amount' }
@@ -4662,24 +4621,17 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery31.execute(node => {
 
                 let classId = node.getValue('classId');
-                let className = node.getValue('className');
                 let concept = node.getValue('concept');
-
                 let periodId = node.getValue('period');
                 periodId = quarterYearMap[periodId];
-
-                let amount = node.getValue('amount');
-
-                //if (!periodId) {
-                //    periodId = '171';
-                //}
+                let amount = Number(node.getValue('amount'));
 
                 if (periodId) {
                     resultTransaction.push({
                         class: { id: 3, name: 'GASTO ADMINISTRATIVO OPERACIONAL' },
                         concept: className,
                         period: periodId,
-                        amount: Number(amount)
+                        amount: hasDecimal == 'T' ? Number(amount) : Number(amount.toFixed(0))
                     })
                 }
 
@@ -4691,8 +4643,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
             transactionQuery41.updateFilters([
                 ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
                 "AND",
-                //["type","noneof","Estimate","SalesOrd","Opprtnty"],
-                //"AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
                 ["accountingperiod.isadjust", "is", "F"],
@@ -4701,13 +4651,13 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 "AND",
                 ['class', 'anyof'].concat([14, 15, 16, 17, 18, 19, 20]),
                 "AND",
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
                 ["type", "noneof", "PurchReq"],
                 "AND",
                 ['account.number', 'startswith', 6],
                 "AND",
-                ["account.number", "doesnotstartwith", [60, 61, 67, 69]]
+                ["account.number", "doesnotstartwith", [60, 61, 67, 69]],
+                "AND",
+                ["memorized", "is", "F"]
             ]);
 
             transactionQuery41.pushColumn(
@@ -4854,9 +4804,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                 let amount = node.getValue('amount');
 
-                /*if (!periodId) {
-                    periodId = '171';
-                }*/
+
                 if (periodId) {
                     resultTransaction.push({
                         class: { id: 6, name: 'GASTO DE VENTA' },
@@ -4974,9 +4922,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             transactionQuery81.execute(node => {
 
-                /*let classId = node.getValue('classId');
-                let className = node.getValue('className');
-                let concept = node.getValue('concept');*/
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
 
                 //let number = node.getValue('number');
 
@@ -4984,10 +4932,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 periodId = quarterYearMap[periodId];
 
                 let amount = node.getValue('amount');
-
-                /*if (!periodId) {
-                    periodId = '171';
-                }*/
 
                 if (periodId) {
                     resultTransaction.push({
@@ -5393,9 +5337,11 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                     amount: Number(node.amount)
                 })
 
-            });
+            });*/
 
             //resultTransaction.sort((a, b) => a.class.id - b.class.id);
+
+            log.debug('resultTransaction', resultTransaction);
 
             resultTransaction.sort(function (a, b) {
                 if (a.class.id !== b.class.id) {
@@ -5404,18 +5350,47 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 return a.concept.localeCompare(b.concept);
             });
 
-            log.debug("resultTransaction", resultTransaction)
-
             return resultTransaction;
         }
 
-        class GastosIndirectosFabricacionReport extends ReportRenderer {
+        class GastosComparativosGroup1 extends ReportRenderer {
 
             constructor(input) {
+                if (input.xls == 'T') {
+                    super(Basic.Data.Report.GASTOS_COMPARATIVOS_XLS);
+                } else {
+                    super(Basic.Data.Report.GASTOS_INDIRECTOS);
+                }
+                log.debug('Template', 'Was Loading....');
 
-                super(Basic.Data.Report.GASTOS_INDIRECTOS);
+                let { subsidiary, view, year, month, decimal, report } = input;
+                hasDecimal = decimal == 'T' || decimal == true ? 'F' : 'T';
 
-                let { subsidiary, view, year, month, decimal } = input;
+                selectReport = REPORTS[report];
+
+                classes = Basic.Classes[selectReport];
+
+                let descriptionMap = {
+                    report: '',
+                    view: '',
+                    year: '',
+                    month: ''
+                };
+
+                if (selectReport == 'GASTOS_INDIRECTOS') {
+                    descriptionMap.report = 'Gastos Indirectos de Fabricación';
+                }
+                if (selectReport == 'GASTOS_ADM_OP') {
+                    descriptionMap.report = 'Gastos Administrativos (Operación)';
+                }
+                if (selectReport == 'GASTOS_ADM_OF') {
+                    descriptionMap.report = 'Gastos Administrativos (Oficina)';
+                }
+                if (selectReport == 'GASTOS_VENTAS') {
+                    descriptionMap.report = 'Gastos de Ventas';
+                }
+
+                log.debug('Action', 'Set Report Name to Object')
 
                 let currentYear = year;
 
@@ -5444,31 +5419,58 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let lastPeriods = [];
                 let transactionList = [];
 
+                descriptionMap.year = currentYearContext.text;
 
-                if (view == Basic.Data.View.DETAILED) { // * Audit: View - Detallada
+                if (view == Basic.Data.View.DETAILED) {
+                    descriptionMap.view = 'Detallado';
+                    // currentPeriods = Operations.createAccountingPeriodByYear(currentYear).reverse();
+                    // lastPeriods = Operations.createAccountingPeriodByYear(lastYear).reverse();
 
-                    log.audit('', 'View - Detallada');
-                    log.audit('currentYear', currentYear);
-                    log.audit('lastYear', lastYear);
+                    //
+                    // [Change Request]
+                    // Slice the array months, first look for the position of a month, 
+                    //
+                    let currentMonth = month;
+                    let auxCurrentPeriods = Operations.createAccountingPeriodByYear(currentYear).reverse();
+                    let auxLastPeriods = Operations.createAccountingPeriodByYear(lastYear).reverse();
 
-                    currentPeriods = Operations.createAccountingPeriodByYear(currentYear).reverse();
-                    lastPeriods = Operations.createAccountingPeriodByYear(lastYear).reverse();
+                    for (var i = 0; i < auxCurrentPeriods.length; i++) {
+
+                        currentPeriods.push(auxCurrentPeriods[i]);
+                        lastPeriods.push(auxLastPeriods[i]);
+
+                        if (auxCurrentPeriods[i].id == currentMonth) {
+                            break;
+                        }
+
+                    }
+                    //***************************************************************
 
                     let totalPeriods = currentPeriods.map(node => { return node.id });
+
                     transactionList = createTransactionDetailsByPeriod(totalPeriods, subsidiary);
 
+                    // transactionList = transactionList.concat(
+                    //     createTransactionDetailsByPeriod(totalPeriods.slice(6, 12), subsidiary)
+                    // );
+
                     totalPeriods = lastPeriods.map(node => { return node.id });
+
                     transactionList = transactionList.concat(createTransactionDetailsByPeriod(totalPeriods, subsidiary));
+
+                    // transactionList = transactionList.concat(createTransactionDetailsByPeriod(totalPeriods.slice(6, 12), subsidiary));
 
                 }
 
                 if (view == Basic.Data.View.QUARTERLY) {
+                    descriptionMap.view = 'Trimestral';
                     currentPeriods = Operations.createAccountingQuarterByYear(currentYear).reverse();
                     lastPeriods = Operations.createAccountingQuarterByYear(lastYear).reverse();
                     transactionList = createTransactionDetailsByQuarter([currentYear, lastYear], subsidiary);
                 }
 
                 if (view == Basic.Data.View.MONTHLY) {
+                    descriptionMap.view = 'Mensual';
 
                     let currentMonth = month;
                     let auxCurrentPeriods = Operations.createAccountingPeriodByYear(currentYear).reverse();
@@ -5476,17 +5478,33 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                     for (var i = 0; i < auxCurrentPeriods.length; i++) {
 
+                        currentPeriods.push(auxCurrentPeriods[i]);
+                        lastPeriods.push(auxLastPeriods[i]);
                         if (auxCurrentPeriods[i].id == currentMonth) {
-                            currentPeriods.push(auxCurrentPeriods[i]);
-                            lastPeriods.push(auxLastPeriods[i]);
+
+                            descriptionMap.month = auxCurrentPeriods[i].text;
                             break;
                         }
 
                     }
-                    transactionList = createTransactionDetailsByMonth([currentPeriods[0].id, lastPeriods[0].id], subsidiary);
+
+
+                    let totalPeriods = currentPeriods.map(node => { return node.id });
+
+                    transactionList = createTransactionDetailsByPeriod(totalPeriods, subsidiary);
+
+                    // transactionList = transactionList.concat(
+                    //     createTransactionDetailsByPeriod(totalPeriods.slice(6, 12), subsidiary)
+                    // );
+
+                    totalPeriods = lastPeriods.map(node => { return node.id });
+
+                    transactionList = transactionList.concat(createTransactionDetailsByPeriod(totalPeriods, subsidiary));
                 }
 
                 if (view == Basic.Data.View.ANNUAL) {
+                    descriptionMap.view = 'Anual';
+
                     currentPeriods = Operations.createAccountingQuarterByYear(currentYear).reverse();
                     lastPeriods = Operations.createAccountingQuarterByYear(lastYear).reverse();
                     transactionList = createTransactionsDetailsByYear([currentYear, lastYear], subsidiary);
@@ -5547,7 +5565,8 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
                     if (!costCenterMap[id]) {
                         costCenterMap[id] = {
-                            id, name,
+                            id,
+                            name,
                             concepts: {},
                             period: JSON.parse(JSON.stringify(currentPeriods)),
                             current: 0,
@@ -5565,80 +5584,108 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                         };
 
                     }
-                    costCenterMap[id].concepts[concept].periods[period] += Number(amount);
+
+
+                    costCenterMap[id].concepts[concept].periods[period] =
+                        sumAmount(costCenterMap[id].concepts[concept].periods[period], amount)
 
                     if (currentYearMap[period]) {
-                        costCenterMap[id].concepts[concept].current += Number(amount);
-                        costCenterMap[id].current += Number(amount);
-                        summaryMap.current.amount += Number(amount);
+                        // costCenterMap[id].concepts[concept].current += Number(amount);
+                        // costCenterMap[id].current += Number(amount);
+                        // summaryMap.current.amount += Number(amount);
+                        costCenterMap[id].concepts[concept].current = sumAmount(
+                            costCenterMap[id].concepts[concept].current, amount);
+
+                        costCenterMap[id].current = sumAmount(
+                            costCenterMap[id].current, amount);
+
+                        log.debug("Amount: " + amount, summaryMap);
+                        summaryMap.current.amount = sumAmount(
+                            summaryMap.current.amount, amount);
+
                     }
                     if (lastYearMap[period]) {
-                        costCenterMap[id].concepts[concept].last += Number(amount);
-                        costCenterMap[id].last += Number(amount);
-                        summaryMap.last.amount += Number(amount);
+
+                        costCenterMap[id].concepts[concept].last = sumAmount(
+                            costCenterMap[id].concepts[concept].last, amount);
+
+                        costCenterMap[id].last = sumAmount(costCenterMap[id].last, amount);
+
+                        summaryMap.last.amount = sumAmount(summaryMap.last.amount, amount);
+                        // costCenterMap[id].concepts[concept].last += Number(amount);
+                        // costCenterMap[id].last += Number(amount);
+                        // summaryMap.last.amount += Number(amount);
                     }
+                    costCenterMap[id].period[period] = sumAmount(costCenterMap[id].period[period], amount);
+                    totalMap[period] = sumAmount(totalMap[period], amount)
 
-                    costCenterMap[id].period[period] += Number(amount)
-
-                    totalMap[period] += Number(amount);
+                    // costCenterMap[id].period[period] += Number(amount)
+                    // totalMap[period] += Number(amount);
 
                 });
+
+                //*************************************************************************
+                // Change 10/10/2023, Filter the months header depending of the report 
+                //
+
+                // if (view == Basic.Data.View.DETAILED && month) {
+                //     let auxiliary = [];
+                //     for (var i = 0; i < headersList.length; i++) {
+                //         auxiliary.push(headersList[i]);
+                //         if (headersList[i].current.id == month) {
+                //             break;
+                //         }
+                //     }
+                //     headersList = auxiliary;
+                // }
+
+
+                if (view == Basic.Data.View.MONTHLY && month) {
+
+                    let auxiliary = [];
+                    for (var i = 0; i < headersList.length; i++) {
+                        if (headersList[i].current.id == month) {
+                            auxiliary.push(headersList[i]);
+                            break;
+                        }
+                    }
+                    headersList = auxiliary;
+                }
+
+                //***************************************************************************
 
 
                 for (var costCenter in costCenterMap) {
                     costCenterMap[costCenter].concepts = Object.values(costCenterMap[costCenter].concepts).sort((a, b) => {
-                        // if (a.name > b.name) {
-                        //     return 1;
-                        // }
-                        // if (a.name < b.name) {
-                        //     return -1;
-                        // }
-                        // return 0;
+
+                        //let variationA = a.current - a.last;
+                        //let variationB = b.current - b.last;
+
+                        //return Number(variationB) - Number(variationA);
                         return a.name - b.name;
                     });
                 }
 
-                // if (decimal == 'T' || decimal == true) {
-
-                //     for (var x in totalMap) {
-                //         totalMap[x] = Number(totalMap[x].toFixed(0))
-                //     }
-
-                //     for (var costCenter in costCenterMap) {
-
-                //         for (var p in costCenterMap[costCenter].period) {
-                //             costCenterMap[costCenter].period[p] = Number(costCenterMap[costCenter].period[p].toFixed(0))
-                //         }
-
-                //         let conceptMap = costCenterMap[costCenter].concepts;
-
-                //         for (var c in conceptMap) {
-                //             for (var p in conceptMap[c].periods) {
-                //                 conceptMap[c].periods[p] = Number(conceptMap[c].periods[p].toFixed(0))
-                //             }
-                //         }
-
-                //     }
-                // }
-
                 let arrayCenters = Object.values(costCenterMap);
 
-                /*arrayCenters = arrayCenters.sort((a, b) => {
-                    return b.current - a.current;
-                });*/
+                //arrayCenters = arrayCenters.sort((a, b) => {
+                //    let variationA = a.current - a.last;
+                //    let variationB = b.current - b.last;
+                //    return Number(variationB) - Number(variationA);
+                //});
 
                 log.debug('summaryMap', summaryMap);
-
                 this.addInput('headers', headersList);
                 this.addInput('total', totalMap);
                 this.addInput('centers', arrayCenters);
                 this.addInput('summary', summaryMap);
-                this.addInput('decimal', decimal == 'T' || decimal == true ? 'T' : 'F')
+                this.addInput('decimal', decimal == 'T' || decimal == true ? 'T' : 'F');
+                this.addInput('description', descriptionMap);
 
             }
 
         }
 
-        return GastosIndirectosFabricacionReport
+        return GastosComparativosGroup1
 
     });

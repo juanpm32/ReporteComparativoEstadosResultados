@@ -2,9 +2,11 @@
  * @NApiVersion 2.1
  * @NScriptType Suitelet
  */
-define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER'],
+define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib.Basic_ER', 'N'],
 
-    function (ServerWidget, ReportManager, Basic) {
+    function (ServerWidget, ReportManager, Basic, N) {
+
+        const { file, encode } = N;
   
         /**
          * Defines the Suitelet script trigger point.
@@ -24,11 +26,32 @@ define(['../lib/Lib.ServerWidget_ER', '../lib/Lib.ReportManager_ER', '../lib/Lib
 
                     let selectedReportHtml = new ReportManager.GastosTransactiones(params).print();
 
-                    ServerWidget.createViewerModel(selectedReportHtml);
+                    if (params.xls == 'T') {
 
-                    let reportForm = ServerWidget.getForm();
+                        let base64fileEncodedString = encode.convert({
+                            string: selectedReportHtml,
+                            inputEncoding: encode.Encoding.UTF_8,
+                            outputEncoding: encode.Encoding.BASE_64
+                        });
 
-                    scriptContext.response.writePage(reportForm);
+                        scriptContext.response.writeFile(
+                            file.create({
+                                name: 'Reporte Detallado (Transacciones).xls',
+                                fileType: file.Type.EXCEL,
+                                encoding: file.Encoding.UTF_8,
+                                contents: base64fileEncodedString
+                            })
+                        )
+
+                    } else {
+
+                        ServerWidget.createViewerModel(selectedReportHtml);
+
+                        let reportForm = ServerWidget.getForm();
+
+                        scriptContext.response.writePage(reportForm);
+
+                    }
                 }
             } catch (err) {
                 log.error('Err', err);

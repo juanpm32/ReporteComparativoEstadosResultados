@@ -7,18 +7,48 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
         const { search, log } = N;
 
-        var classes = Basic.Classes.GASTOS_ADM_OP;
+        //var classes = Basic.Classes.GASTOS_ADM_OP;
 
-        function createAccountNumberFilter() {
-            let filter = ['AND'];
-            filter.push(['account.number', 'startswith', Basic.Account.True.GASTOS_ADM_OP]);
+        //function createAccountNumberFilter() {
+        //    let filter = ['AND'];
+        //    filter.push(['account.number', 'startswith', Basic.Account.True.GASTOS_ADM_OP]);
 
-            Basic.Account.False.GASTOS_ADM_OP.forEach(number => {
-                filter.push('AND');
-                filter.push(['account.number', 'doesnotstartwith', number]);
+        //    Basic.Account.False.GASTOS_ADM_OP.forEach(number => {
+        //        filter.push('AND');
+        //        filter.push(['account.number', 'doesnotstartwith', number]);
+        //    });
+
+        //    return filter;
+        //}
+
+        function countRecordsWithFilters(filters) {
+            // Convertir los filtros a la estructura adecuada para search.create
+            var filterExpression = [];
+            for (var i = 0; i < filters.length; i++) {
+                var filter = filters[i];
+                if (Array.isArray(filter)) {
+                    filterExpression.push(filter);
+                } else if (filter === "AND" || filter === "OR") {
+                    filterExpression.push(filter);
+                }
+            }
+
+            // Crear la búsqueda con los filtros convertidos
+            var mySearch = search.create({
+                type: 'transaction', // Ajusta el tipo según tus necesidades
+                filters: filterExpression
             });
 
-            return filter;
+            // Ejecutar la búsqueda
+            var mySearchObj = mySearch.run();
+            var searchResults = mySearchObj.getRange({
+                start: 0,
+                end: 2 // Ajusta esto según tus necesidades para evitar límites de resultados
+            });
+
+            // Obtener la cantidad de registros devueltos
+            return searchResults.length;
+
         }
 
         function createTransactionDetailsByMonth(periods, subsidiary) {
@@ -218,14 +248,20 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 return true;
             });
 
-            log.debug('quarterYearMap', quarterYearMap);
+            //log.debug('quarterYearMap', quarterYearMap);
 
             let resultTransaction = [];
 
-            let transactionQuery = new Basic.CustomSearch('transaction');
+            // Siguiente seccion agregada VENTA NETA
 
-            transactionQuery.updateFilters([
-                ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+            // Siguiente seccion agregada VENTA NACIONAL
+            // Siguiente seccion agregada CONCEPTO Mercaderias
+            let transactionQuery11 = new Basic.CustomSearch('transaction');
+
+            transactionQuery11.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
                 "AND",
                 ["accountingperiod.parent", "anyof"].concat(years),
                 "AND",
@@ -233,35 +269,103 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 'AND',
                 ['subsidiary', 'anyof', subsidiary],
                 "AND",
-                ['class', 'anyof'].concat(classes),
-                'AND',
-                ['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                "AND",
-                ["type", "noneof", "PurchReq"]
-            ].concat(createAccountNumberFilter())
-            );
+                //['class', 'anyof'].concat(classes)
+                //'AND',
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                //["type", "noneof", "PurchReq"]
+                ['account.number', 'startswith', 701]
+            ]);
 
-            transactionQuery.pushColumn(
-                { name: 'class', summary: 'GROUP', label: 'classId' }
-            );
-            transactionQuery.pushColumn(
-                { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
-            );
-            transactionQuery.pushColumn(
-                { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
-            );
-            transactionQuery.pushColumn(
+            // transactionQuery.pushColumn(
+            //     { name: 'class', summary: 'GROUP', label: 'classId' }
+            // );
+            // transactionQuery.pushColumn(
+            //     { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            // );
+            // transactionQuery.pushColumn(
+            //     { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            // );
+            transactionQuery11.pushColumn(
                 { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
             );
-            transactionQuery.pushColumn(
+            transactionQuery11.pushColumn(
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            transactionQuery.execute(node => {
+            transactionQuery11.execute(node => {
 
-                let classId = node.getValue('classId');
-                let className = node.getValue('className');
-                let concept = node.getValue('concept');
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
+
+                let periodId = node.getValue('period');
+                periodId = quarterYearMap[periodId];
+
+                let amount = node.getValue('amount');
+
+                if (periodId) {
+                    resultTransaction.push({
+                        class: { id: 0, name: 'VENTA NACIONAL' },
+                        concept: 'Mercaderias',
+                        period: periodId,
+                        amount: Number(amount)
+                    })
+                }
+
+            });
+
+
+            // Siguiente seccion agregada CONCEPTO LINEAS
+            let transactionQuery13 = new Basic.CustomSearch('transaction');
+
+            transactionQuery13.updateFilters([
+                //["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                //"AND",
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
+                "AND",
+                ["accountingperiod.parent", "anyof"].concat(years),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                //['class', 'anyof'].concat(classes),
+                //'AND',
+                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
+                //"AND",
+                ["item.custitem3", "is", 1],
+                "AND",
+                ['account.number', 'startswith', 702]
+            ]);
+
+            //transactionQuery13.pushColumn(
+            //    { name: 'class', summary: 'GROUP', label: 'classId' }
+            //);
+            //transactionQuery13.pushColumn(
+            //    { name: 'classnohierarchy', summary: 'GROUP', label: 'className' }
+            //);
+            //transactionQuery13.pushColumn(
+            //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
+            //);
+            transactionQuery13.pushColumn(
+                { name: 'custitem3', join: 'item', summary: 'GROUP', label: 'line' }
+            );
+            transactionQuery13.pushColumn(
+                { name: 'parent', join: "accountingperiod", summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery13.pushColumn(
+                { name: 'amount', summary: 'SUM', label: 'amount' }
+            );
+
+            transactionQuery13.execute(node => {
+
+                //let classId = node.getValue('classId');
+                //let className = node.getValue('className');
+                //let concept = node.getValue('concept');
+
+                let line = node.getText('line');
+
 
                 let periodId = node.getValue('period');
                 periodId = quarterYearMap[periodId];
@@ -269,12 +373,14 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let amount = node.getValue('amount');
 
                 resultTransaction.push({
-                    class: { id: classId, name: className },
-                    concept: concept,
+                    class: { id: 0, name: 'VENTAS NETAS' },
+                    concept: line,
                     period: periodId,
                     amount: Number(amount)
                 })
             });
+
+            log.debug('resultTransaction',resultTransaction);
 
             return resultTransaction;
         }

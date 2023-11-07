@@ -94,8 +94,8 @@ define(['N'],
         const Template = {
             1: 'GastosIndirectosFabricacion_ER.html',
             2: 'GastosDetalleTransacciones_ER.html',
-            3: 'GastosComparativoExcel.ftl',
-            4: 'GastosDetalleExcel.ftl'
+            3: 'GastosComparativoExcel_ER.ftl',
+            4: 'GastosDetalleExcel_ER.ftl'
         }
 
         const Classes = {

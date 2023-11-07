@@ -38,9 +38,10 @@ define(['N', './Lib.Dao_ER', './Lib.Render_ER', './Lib.Operations_ER'],
         const STATIC_DATA = {
             reports: {
                 1: 'P&L por Mercado',
-                2: 'Comparativo Gastos de Administracion Operacion',
-                3: 'Comparativo Gastos de Administracion Oficina',
-                4: 'Comparativo Gastos de Venta'
+                2: 'P&L por Línea Farmacéutica'
+                //2: 'Comparativo Gastos de Administracion Operacion',
+                //3: 'Comparativo Gastos de Administracion Oficina',
+                //4: 'Comparativo Gastos de Venta'
             },
             viewForm: {
                 'A': 'Detallada',
@@ -117,7 +118,7 @@ define(['N', './Lib.Dao_ER', './Lib.Render_ER', './Lib.Operations_ER'],
                 reportField.defaultValue = formContext.params.report;
             }
 
-            let decimalField = formContext.form.addField({
+            /*let decimalField = formContext.form.addField({
                 id: SUITELET_RECORD.fields.decimal,
                 label: formContext.dao.get(SUITELET_RECORD.fields.decimal),
                 type: 'checkbox',
@@ -125,7 +126,7 @@ define(['N', './Lib.Dao_ER', './Lib.Render_ER', './Lib.Operations_ER'],
             });
             if (formContext.params.decimal) {
                 decimalField.defaultValue = formContext.params.decimal;
-            }
+            }*/
 
         }
 
@@ -181,7 +182,9 @@ define(['N', './Lib.Dao_ER', './Lib.Render_ER', './Lib.Operations_ER'],
             yearField.updateBreakType({ breakType: 'STARTCOL' })
             yearField.isMandatory = true;
 
-            Operations.createAccountingPeriodYear().forEach(node => {
+            let yearArray = Operations.createAccountingPeriodYear();
+
+            yearArray.forEach(node => {
                 yearField.addSelectOption({ value: node.id, text: node.text });
             });
 
@@ -199,10 +202,12 @@ define(['N', './Lib.Dao_ER', './Lib.Render_ER', './Lib.Operations_ER'],
             });
             monthField.updateBreakType({ breakType: 'STARTCOL' })
 
-            if (formContext.params.view != 'D') {
+            if (formContext.params.view && formContext.params.view != 'D' && formContext.params.view != 'A') {
                 monthField.updateDisplayType({ displayType: 'DISABLED' })
             } else {
                 let selectedYear = formContext.params.year;
+                selectedYear = selectedYear ? selectedYear : yearArray[0].id;
+
                 if (selectedYear) {
                     Operations.createAccountingPeriodByYear(selectedYear).forEach(node => {
                         monthField.addSelectOption({ value: node.id, text: node.text });

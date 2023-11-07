@@ -47,13 +47,13 @@
 }
 
 .bm-container-body {
-    height: 95%;
+    height: 90%;
 }
 
 .bm-report-table {
-    border-collapse: collapse;
     font-size: 12px;
-    border-top: 1px solid #dcdcdc;
+    border-spacing: 0;
+    border-top: 0px solid #dcdcdc;
 
 }
 
@@ -62,6 +62,34 @@
     text-transform: uppercase;
     background-color: #E0E6EF;
     padding: 5px
+}
+
+.bm-report-table thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.bm-report-table tr td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    background: #f5f9ff;
+    border-right: 2px solid black;
+}
+
+.bm-report-table tr th:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    border-right: 2px solid black;
+    margin-right: 4px;
+
+}
+
+
+.bm-report-table tr:first-child th:first-child {
+    z-index: 3;
 }
 
 .bm-report-table td {
@@ -81,6 +109,11 @@
     background: #E0E6EF;
 }
 
+.bm-report-table tbody tr:hover td:first-child {
+    background: #E0E6EF;
+    ;
+}
+
 .bm-report-table th:not(:first-child),
 .bm-report-table td:not(:first-child) {
     width: 100px;
@@ -92,6 +125,24 @@
 .bm-report-table td:first-child {
     width: 250px;
     min-width: 250px;
+    max-width: 250px;
+}
+
+.bm-report-table th:first-child {
+    position: sticky;
+    left: 0px;
+
+}
+
+/* .bm-report-table td:first-child {
+    position: sticky;
+    left: 0px;
+    background: #f5f9ff;
+} */
+
+.bm-report-table td:first-child:hover {
+    background: #E0E6EF;
+
 }
 
 .bm-report-table .left {
