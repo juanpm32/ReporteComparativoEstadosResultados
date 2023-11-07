@@ -1390,6 +1390,42 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             let resultTransaction = [];
 
+            let transactionQuery01 = new Basic.CustomSearch('transaction');
+
+            transactionQuery01.updateFilters([
+                ["account.custrecord_bio_cam_cuenta_concepto", "isnotempty", ""],
+                "AND",
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
+                "AND",
+                ["accountingperiod.internalid", "anyof"].concat(periods),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND",
+                ['account.number', 'startswith', 701]
+            ]);
+
+            if (countRecordsWithFilters(transactionQuery01.context.filters) === 0) {
+                periods.forEach(period => {
+                    resultTransaction.push({
+                        class: { id: 0, name: 'VENTA NETA' },
+                        concept: 'MERCADERIAS',
+                        period: period,
+                        amount: 0
+                    })
+                });
+                periods.forEach(period => {
+                    resultTransaction.push({
+                        class: { id: 0, name: 'VENTA NETA' },
+                        concept: 'MATERIAS PRIMAS',
+                        period: period,
+                        amount: 0
+                    })
+                });
+            }
+
+
             let transactionQuery11 = new Basic.CustomSearch('transaction');
 
             transactionQuery11.updateFilters([
@@ -1412,15 +1448,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ['account', 'noneof', '6479', '6473', '6469', '6470', '6471', '6472', '6633', '6478']
             ]);
 
-            //transactionQuery.pushColumn(
-            //    { name: 'class', summary: 'GROUP', label: 'classId' }
-            //);
-            // transactionQuery.pushColumn(
-            //     { name: 'name', join: 'class', summary: 'GROUP', label: 'className' }
-            // );
-            //transactionQuery.pushColumn(
-            //    { name: 'custrecord_bio_cam_cuenta_concepto', join: 'account', summary: 'GROUP', label: 'concept' }
-            //);
             transactionQuery11.pushColumn(
                 { name: 'custitem3', join: 'item', summary: 'GROUP', label: 'line' }
             );
@@ -1431,17 +1458,6 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'netamount', summary: 'SUM', label: 'amount' }
             );
 
-            /*if (countRecordsWithFilters(transactionQuery11.context.filters) === 0) {
-                periods.forEach(period => {
-                    resultTransaction.push({
-                        class: { id: 0, name: 'VENTA NACIONAL' },
-                        concept: 'Mercaderias',
-                        period: period,
-                        amount: 0
-                    })
-                })
-            } else {*/
-
             transactionQuery11.execute(node => {
 
                 let line = node.getText('line');
@@ -1451,12 +1467,75 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 if (periodId) {
                     resultTransaction.push({
                         class: { id: 0, name: 'VENTA NETA' },
-                        concept: line,
+                        concept: 'PT '+ line,
                         period: periodId,
                         amount: Number(amount)
                     })
                 }
             });
+            
+
+            //Siguiente seccion agregada COSTO DE VENTA
+            let transactionQuery21 = new Basic.CustomSearch('transaction');
+
+            transactionQuery21.updateFilters([
+                ["type", "noneof", "Estimate", "SalesOrd", "Opprtnty"],
+                "AND",
+                ["accountingperiod.internalid", "anyof"].concat(periods),
+                "AND",
+                ["accountingperiod.isadjust", "is", "F"],
+                'AND',
+                ['subsidiary', 'anyof', subsidiary],
+                "AND", 
+                ["account.number","startswith","692"], 
+                "AND", 
+                ["item.custitem3","anyof","42","9","11","1","2","10","3"], 
+                "AND", 
+                ["accountingperiod.isadjust","is","F"], 
+                "AND", 
+                ["item.type","anyof","Assembly"], 
+                "AND", 
+                ["type","anyof","ItemShip","ItemRcpt","CustCred"], 
+                "AND", 
+                ["custbody_ns_pe_oper_type","noneof","21","11"]
+            ]);
+
+            transactionQuery21.pushColumn(
+                { name: 'custitem3', join: 'item', summary: 'GROUP', label: 'line' }
+            );
+            transactionQuery21.pushColumn(
+                { name: 'postingperiod', summary: 'GROUP', label: 'period' }
+            );
+            transactionQuery21.pushColumn(
+                { name: 'netamount', summary: 'SUM', label: 'amount' }
+            );
+
+            /*if (countRecordsWithFilters(transactionQuery21.context.filters) === 0) {
+                periods.forEach(period => {
+                    resultTransaction.push({
+                        class: { id: 1, name: 'COSTO DE VENTAS' },
+                        concept: 'Mercaderias',
+                        period: period,
+                        amount: 0
+                    })
+                })
+            } else {*/
+                transactionQuery21.execute(node => {
+
+                    let line = node.getText('line');
+                    let periodId = node.getValue('period');
+                    let amount = node.getValue('amount');
+
+                    if (periodId) {
+                        resultTransaction.push({
+                            class: { id: 1, name: 'COSTO DE VENTAS' },
+                            concept: 'PT '+ line,
+                            period: periodId,
+                            amount: Number(amount)
+                        })
+                    }
+
+                });
             /*}*/
 
             /*//Siguiente seccion agregada CONCEPTO Materias Primas
@@ -2737,7 +2816,9 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             resultTransaction.sort(function (a, b) {
                 if (a.class.id !== b.class.id) {
-                    return a.class.id - b.class.id;
+                    if (a.conceptId !== b.conceptId) {
+                        return a.class.id - b.class.id;
+                    }
                 }
                 return a.concept.localeCompare(b.concept);
             });
