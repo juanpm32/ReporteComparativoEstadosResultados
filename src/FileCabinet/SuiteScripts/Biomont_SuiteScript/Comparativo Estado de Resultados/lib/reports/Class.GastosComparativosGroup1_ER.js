@@ -449,7 +449,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            
+
             if (countRecordsWithFilters(transactionQuery23.context.filters) === 0) {
                 periods.forEach(period => {
                     resultTransaction.push({
@@ -1400,21 +1400,16 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 ["accountingperiod.isadjust", "is", "F"],
                 'AND',
                 ['subsidiary', 'anyof', subsidiary],
-                //"AND",
-                //['class', 'anyof'].concat(classes)
-                //'AND',
-                //['account.custrecord_bio_cam_cuenta_concepto', 'isnotempty', ''],
-                //"AND",
-                //["type", "noneof", "PurchReq"],
-                "AND",
-                ['account.number', 'startswith', '702'],
-                //"AND",
-                //['account.number', 'isnot', '70211111'],
-                //"AND",
-                //['account.number', 'anyof', '70221112'],
-                "AND",
-                ["item.cseg2","anyof","15"], 
-                //].concat(createAccountNumberFilter())
+                'AND',
+                ['custbody114', 'noneof', '25', '24', '13', '22', '11', '10', '28', '3', '8'],
+                'AND',
+                ['custcol_ns_afec_igv', 'noneof', '16'],
+                'AND',
+                ['item.custitem3', 'anyof', '1', '3', '2', '37', '9', '11', '10'],
+                'AND',
+                ['custbody_ns_document_type', 'anyof', '4', '2', '9', '8'],
+                'AND',
+                ['account', 'noneof', '6479', '6473', '6469', '6470', '6471', '6472', '6633', '6478']
             ]);
 
             //transactionQuery.pushColumn(
@@ -1433,7 +1428,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'postingperiod', summary: 'GROUP', label: 'period' }
             );
             transactionQuery11.pushColumn(
-                { name: 'amount', summary: 'SUM', label: 'amount' }
+                { name: 'netamount', summary: 'SUM', label: 'amount' }
             );
 
             /*if (countRecordsWithFilters(transactionQuery11.context.filters) === 0) {
@@ -1447,21 +1442,21 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 })
             } else {*/
 
-                transactionQuery11.execute(node => {
+            transactionQuery11.execute(node => {
 
-                    let line = node.getText('line');
-                    let periodId = node.getValue('period');
-                    let amount = node.getValue('amount');
+                let line = node.getText('line');
+                let periodId = node.getValue('period');
+                let amount = node.getValue('amount');
 
-                    if (periodId) {
-                        resultTransaction.push({
-                            class: { id: 0, name: 'VENTA NETA' },
-                            concept: line,
-                            period: periodId,
-                            amount: Number(amount)
-                        })
-                    }
-                });
+                if (periodId) {
+                    resultTransaction.push({
+                        class: { id: 0, name: 'VENTA NETA' },
+                        concept: line,
+                        period: periodId,
+                        amount: Number(amount)
+                    })
+                }
+            });
             /*}*/
 
             /*//Siguiente seccion agregada CONCEPTO Materias Primas
@@ -2738,7 +2733,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             //resultTransaction.sort((a, b) => a.class.id - b.class.id);*/
 
-            log.debug("resultTransaction",resultTransaction);
+            log.debug("resultTransaction", resultTransaction);
 
             resultTransaction.sort(function (a, b) {
                 if (a.class.id !== b.class.id) {
@@ -2783,7 +2778,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let periodId = node.getValue('period');
                 let periodName = node.getText('period');
                 let amount = node.getValue('amount');
-            
+
                 resultTransaction.push({
                     class: { id: 0, name: 'VENTA NACIONAL' },
                     concept: 'Mercaderias',
@@ -2931,7 +2926,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada COSTO DE VENTA
             //Siguiente seccion agregada CONCEPTO Mercaderias
@@ -2980,7 +2975,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Materias Primas
             let transactionQuery22 = new Basic.CustomSearch('transaction');
@@ -3028,7 +3023,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Venta Nacional
             let transactionQuery23 = new Basic.CustomSearch('transaction');
@@ -3082,7 +3077,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-     
+
 
             //Siguiente seccion agregada CONCEPTO Exportación
             let transactionQuery24 = new Basic.CustomSearch('transaction');
@@ -3136,7 +3131,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Desvalorizacion Existencias
             let transactionQuery25 = new Basic.CustomSearch('transaction');
@@ -3184,7 +3179,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             // Paso 1: Obtener todos los period sin duplicados
             const periods = [...new Set(resultTransaction.map(item => item.period))];
@@ -3586,7 +3581,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada INGRESOS FINANCIEROS
             let transactionQuery91 = new Basic.CustomSearch('transaction');
@@ -3639,7 +3634,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
 
             //Siguiente seccion agregada INGRESOS FINANCIEROS
@@ -3697,7 +3692,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada INGRESOS DIVERSOS
             let transactionQuery101 = new Basic.CustomSearch('transaction');
@@ -3738,7 +3733,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let periodId = node.getValue('period');
                 let periodName = node.getText('period')
                 let amount = node.getValue('amount');
-    
+
                 if (periodId) {
                     resultTransaction.push({
                         class: { id: 10, name: 'INGRESOS DIVERSOS' },
@@ -3749,7 +3744,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada DIFERENCIA DE CAMBIO
             let transactionQuery111 = new Basic.CustomSearch('transaction');
@@ -3801,7 +3796,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             // Crear un objeto para mantener un seguimiento de las acumulaciones por class.id
             const accum_utilidad_antes_particion = {};
@@ -5346,7 +5341,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
 
             //resultTransaction.sort((a, b) => a.class.id - b.class.id);
 
-            log.debug('resultTransaction',resultTransaction);
+            log.debug('resultTransaction', resultTransaction);
 
             resultTransaction.sort(function (a, b) {
                 if (a.class.id !== b.class.id) {
