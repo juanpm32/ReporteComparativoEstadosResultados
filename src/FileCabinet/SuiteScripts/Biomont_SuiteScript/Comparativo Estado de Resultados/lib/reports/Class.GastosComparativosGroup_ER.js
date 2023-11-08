@@ -449,7 +449,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 { name: 'amount', summary: 'SUM', label: 'amount' }
             );
 
-            
+
             if (countRecordsWithFilters(transactionQuery23.context.filters) === 0) {
                 periods.forEach(period => {
                     resultTransaction.push({
@@ -2773,7 +2773,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let periodId = node.getValue('period');
                 let periodName = node.getText('period');
                 let amount = node.getValue('amount');
-            
+
                 resultTransaction.push({
                     class: { id: 0, name: 'VENTA NACIONAL' },
                     concept: 'Mercaderias',
@@ -2812,7 +2812,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 })
             })
 
-            const arrayPeriodos = ['180', '295', '293', '184', '294'];
+            //const arrayPeriodos = ['180', '295', '293', '184', '294'];
 
             //Siguiente seccion agregada CONCEPTO PT Nacional
             let transactionQuery13 = new Basic.CustomSearch('transaction');
@@ -2921,7 +2921,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada COSTO DE VENTA
             //Siguiente seccion agregada CONCEPTO Mercaderias
@@ -2970,7 +2970,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Materias Primas
             let transactionQuery22 = new Basic.CustomSearch('transaction');
@@ -3018,7 +3018,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Venta Nacional
             let transactionQuery23 = new Basic.CustomSearch('transaction');
@@ -3072,7 +3072,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-     
+
 
             //Siguiente seccion agregada CONCEPTO Exportación
             let transactionQuery24 = new Basic.CustomSearch('transaction');
@@ -3126,7 +3126,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada CONCEPTO Desvalorizacion Existencias
             let transactionQuery25 = new Basic.CustomSearch('transaction');
@@ -3174,7 +3174,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             // Paso 1: Obtener todos los period sin duplicados
             const periods = [...new Set(resultTransaction.map(item => item.period))];
@@ -3576,7 +3576,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada INGRESOS FINANCIEROS
             let transactionQuery91 = new Basic.CustomSearch('transaction');
@@ -3629,7 +3629,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
 
             //Siguiente seccion agregada INGRESOS FINANCIEROS
@@ -3687,7 +3687,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada INGRESOS DIVERSOS
             let transactionQuery101 = new Basic.CustomSearch('transaction');
@@ -3728,7 +3728,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 let periodId = node.getValue('period');
                 let periodName = node.getText('period')
                 let amount = node.getValue('amount');
-    
+
                 if (periodId) {
                     resultTransaction.push({
                         class: { id: 10, name: 'INGRESOS DIVERSOS' },
@@ -3739,7 +3739,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             //Siguiente seccion agregada DIFERENCIA DE CAMBIO
             let transactionQuery111 = new Basic.CustomSearch('transaction');
@@ -3791,7 +3791,7 @@ define(['N', './Class.ReportRenderer_ER', '../Lib.Basic_ER', '../Lib.Operations_
                 }
 
             });
-            
+
 
             // Crear un objeto para mantener un seguimiento de las acumulaciones por class.id
             const accum_utilidad_antes_particion = {};
